@@ -1,0 +1,80 @@
+---
+title: "Tutorial"
+output: 
+  learnr::tutorial:
+          theme: flatly
+          highlight: tango
+runtime: shiny_prerendered
+description: "Este é a minha primeira tentativa de usar o learnr"
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Operações Matemáticas
+
+### Exercício 
+
+*Aqui está um exercício simples com um bloco de código vazio fornecido para inserir a resposta.*
+
+Escreva o código R necessário para adicionar 2 mais 2:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+### Exercício com códigos
+
+*Aqui está um exercício com algum código pré-preenchido, bem como `exercício.lines = 5` para fornecer um pouco mais de espaço inicial para trabalhar.*
+
+Agora escreva uma função que some quaisquer dois números e chame-a:
+
+```{r add-function, exercise=TRUE, exercise.lines = 5}
+add <- function() {
+  
+}
+```
+
+## Atribuindo valores no R
+
+### Exercícios com "Dicas / Hint"
+
+*Aqui está um exercício em que o trecho é pré-avaliado por meio da opção `exercício.eval` (para que o usuário possa ver a saída padrão que gostaríamos que eles personalizassem). Também adicionamos uma "dica" para a solução correta por meio do trecho imediatamente abaixo denominado `print-limit-hint`. *
+
+Modifique o seguinte código para limitar o número de linhas impressas a 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+### Quiz
+
+*Você pode incluir qualquer número de perguntas de escolha única ou múltipla como um teste. Use a função `question` para definir uma pergunta e a função` quiz` para agrupar várias perguntas. *
+
+Algumas perguntas para verificar se você entende os objetivos de vários pacotes R básicos e recomendados:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+
+# https://github.com/rstudio/gradethis
