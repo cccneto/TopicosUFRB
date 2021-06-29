@@ -1,0 +1,674 @@
+---
+title: "Introdução ao Tidyverse"
+runningheader: "" # only for pdf output
+subtitle: "Tópicos Especiais em Meio Ambiente I" # only for html output
+author: "Prof. Claudiano Neto"
+date: "`r Sys.Date()`"
+output:
+  output: html_document 
+  # tufte::tufte_html: default
+  # tufte::tufte_handout:
+  #   latex_engine: xelatex
+  # tufte::tufte_book:
+  #   citation_package: natbib
+  #   latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(gapminder) 
+# criado por jenny Bryan, conjunto de dados
+library(dplyr) 
+# criado por Hadley Wickham, que fornece ferramentas passo a passo para transformar esses dados, como filtrar, classificar e resumir.  
+```
+
+```{r, message=FALSE, warning=FALSE}
+gapminder
+```
+
+# *FILTER*
+
+```{r}
+# O verbo FILTER permite selecionar uma parte especifica dos dados para realizar sua analise. Deve ser precedido do *%>%* que significa (pegue o que estiver a frente e alimente-o na proxima etapa).
+
+gapminder %>%
+  filter (year == 2007)
+```
+
+Você poderia mudar o filtro para outra coisa
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+  filter(country == "United States")
+```
+
+Podemos ter multiplas condições para o filtro, basta separá-las por "," virgula.
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+  filter(year == 2007, country == "United States")
+```
+
+# *ARRANGE*
+
+```{r, message=FALSE, warning=FALSE}
+# O verbo "arrange" classifica uma tabela baseado em uma variavel (crescente ou decrescente). É muito util quando voce deseja conhecer os valores mais extremos do conjunto do banco de dados.
+
+gapminder %>%
+  arrange(gdpPercap)
+
+# Dentro do verbo arrange voce coloca a variavel que orientará a classificacao  
+```
+
+Podemos organizar por ordem decrescente via arrange(desc())
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+  arrange(desc(gdpPercap))
+```
+
+Suponha que voce deseja encontrar (paises com maior gdp em apenas um ano)
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+  filter(year==2007) %>%
+  arrange(desc(gdpPercap))
+```
+
+# **MUTATE** verbo
+
+```{r, message= FALSE, warning=FALSE}
+# Serve para mudanças nas variaveis ou adicionar variaveis
+
+gapminder %>%
+      mutate(pop = pop / 1000000)
+
+```
+
+Suponha que eu deseje **CRIAR** uma nova variavel, por exemplo, o PIB total dos paises.
+
+```{r, message= FALSE, warning=FALSE}
+# aqui devemos usar "=" 
+
+gapminder %>%
+      mutate(gdp = gdpPercap * pop)
+```
+
+Combinando os verbos (filter, arrange, mutate) para descobrir: quais os paises com maior PIB no ano de 2007.
+
+```{r, message= FALSE, warning=FALSE}
+# Precisamos: 1) criar a nova variavel, 2) filtrar pelo ano, 3) organizar por valores decrescentes
+gapminder %>%
+  mutate(gdp = gdpPercap * pop) %>%
+  filter(year == 2007) %>%
+  arrange(desc(gdp)) 
+```
+
+## PLOTANDO seus dados I
+
+```{r, message= FALSE, warning=FALSE}
+library(ggplot2)
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) + 
+  geom_point()
+``` 
+
+Aquivamos vamos usar o pacote ggplot2.
+Uma explicação importante adicional: algumas vezes quando voce trabalha continuamente com os dados filtrados por uma variavel (subjconjunto), algumas vezes é útil salvar os dados filtrados, como um novo conjunto de dados.
+
+```{r, message= FALSE, warning=FALSE}
+gapminder_2007 <- gapminder %>%
+                    filter(year == 2007)
+
+gapminder_2007
+``` 
+
+Suponha que voce queira examinar a relação entre a riqueza de um pais e sua expectativa de vida.
+
+```{r, message= FALSE, warning=FALSE}
+ggplot(gapminder_2007, aes(x = gdpPercap, y = lifeExp)) + 
+  geom_point()
+``` 
+
+*AES*, aesthetic é uma dimensao visual de um grafico que pode ser usada para comunicar informacoes.
+*GEOM_POINT*, voce está adicionando um objeto geometrico ao grafico, trata-se de especificar o tipo de grafico que voce está criando.
+
+# LOG SCALES 
+
+Fizemos o grafico acima, e percebemos que paises de renda mais alta, tem maior expectativa de vida. Um problema com esse grafico, no entanto, é que muitos paises ficam amontoados na parte mais à esquerda do eixo x.
+
+Isso ocorreu porque a distribuicao do pib per capita abrange varias ordens de magnitude, com alguns paises na casa das dezenas de milhares de dolares e outros na casa das centenas.
+
+Quando um de nossos eixos apresenta essa distribuição, é util trabalhar com uma escala logaritimica, ou seja, uma escala em que cada distância fixa representa uma multiplicacao do valor.
+
+*Criando o grafico usando o log scale*
+
+```{r, message= FALSE, warning=FALSE}
+ggplot(gapminder_2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() + 
+    scale_x_log10()
+``` 
+
+
+Esses sao os mesmo dados, mas agora cada unidade no eixo x representa uma mudança de 10 vezes o PIB.
+
+Nesse novo grafico podemos ver os dados de uma maneira mais linear, e podemos distinguir mais facilmente os paises na extremidade inferior do espectro.
+
+**Algumas vezes ambos os eixos devem ser convertidos para a escala de log.
+
+```{r, message=FALSE, warning=FALSE}
+# Criando o gapminder filtrado para o ano 1952 
+gapminder_1952 <- gapminder %>% 
+                  filter(year == 1952)
+```  
+
+
+Plotando com ambos os eixos com escala de log
+```{r, message=FALSE, warning=FALSE}
+ggplot (gapminder_1952, aes(x = pop, y = gdpPercap)) +
+        scale_x_log10() + 
+        scale_y_log10() +
+        geom_point()
+```
+
+# ESTÉTICA ADICIONAL - additional aesthetics
+
+Nós aprendemos como criar uma plotagem de duas variaveis e assim enxergar sua relacao. O nosso banco de dados "gapminder" possui outras variaveis que podem também ser utilizadas, de maneira a entendermos outros relacionamentos entre elas.
+
+Ate aqui usamos populacao como eixo X, e pib per capita como eixo y. Agora vamos aprender a usar mais duas esteticas adicionais, COLOR and SIZEe e para isso vamos utilizar as variaveis continente e pais.
+
+Observe que continente é uma variavel categórica, e por isso apresenta valores bem especificos. Uma *boa maneira de apresentar variaveis categorias em um gráfico* é através da dimensao COLOR.
+
+```{r}
+ggplot (gapminder_2007, aes(x = gdpPercap, y =lifeExp, color = continent)) +
+        scale_x_log10() + 
+        geom_point()
+```
+
+Observe que populacao (pop) é uma variavel numérica, uma *boa maneira de apresentar variaveis numericas um gráfico* é através da dimensao SIZE, que significa "tamanho".
+
+```{r}
+ggplot (gapminder_2007, aes(x = gdpPercap, y =lifeExp, color = continent, size = pop)) +
+        scale_x_log10() + 
+        geom_point()
+```
+
+# FACETING 
+
+Esse verbo serve para dividir nossa plotagem em subtramas para uma obter uma melhor visualizacao em um grafico menor para cada continente (por exemplo).
+
+
+```{r}
+ggplot (gapminder_2007, aes(x = gdpPercap, y =lifeExp, color = continent)) +
+       geom_point() + 
+      scale_x_log10() + 
+      facet_wrap(~ continent)
+
+# ~ signica "por"
+```
+
+### CALCULO
+
+```{r}
+gapminder %>%
+      summarize(sumPop = sum(as.numeric(pop)))
+```
+
+
+```{r}
+gapminder_1952_2007 <- gapminder %>%
+                        filter(year == 1952|2007)
+
+# aqui eu estou pedindo os anos entre 1952 a 2007
+```
+
+```{r}
+ggplot(gapminder_1952_2007, aes(x = gdpPercap, y = lifeExp, 
+                    color = continent, size = pop)) + 
+          geom_point()+
+          scale_x_log10()+
+          facet_wrap(~year)
+```
+
+# SUMMARIZE verbo
+
+Agora voce aprendera a resumir muitas observacoes em um unico ponto de dados . 
+
+```{r, message=FALSE, warning=FALSE}
+
+gapminder %>%
+     summarize(meanLifeExp = mean(lifeExp))
+```
+
+Faz mais sentido analisar a media da expectativa de vida para um ano em especifico, por exemplo.
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+      filter(year == 2007) %>%
+     summarize(meanLifeExp = mean(lifeExp))
+```
+
+Podemos acrescentar mais detalhes a nossa funcao summarize
+
+```{r, message=FALSE, warning=FALSE}
+
+gapminder %>%
+      filter(year == 2007) %>%
+      summarize(meanLifeExp = mean(lifeExp), 
+          totalPop = sum(as.numeric(pop)))
+```
+
+Podemos ainda summarizar via "mediana - median", "minimo - min" e "maximo - max"
+
+```{r, message=FALSE, warning=FALSE}
+
+gapminder %>%
+        filter(year == 2007) %>%
+        summarize(medianLifeExp = median(lifeExp), maxGdpPercap = max(gdpPercap)) 
+```
+
+# Verbo *GROUP_by*
+
+Em um dos exemplos acima, nós encontramos a media da expectativa de vida e o total da populacao para o ano de 2007. Mas e se nao quisemos apenas para 2007? Mas em cada ano do conjunto.
+
+**group_by()** antes do **summarize()** transforma em grupos dentro de uma 
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+      group_by(year) %>%
+      summarize(meanLifeExp = mean(lifeExp), sumPop = sum(as.numeric(pop)))
+```
+
+Sumarizando pelo continente
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+      filter(year == 2002) %>%
+      group_by(continent) %>%
+      summarize(meanLifeExp = mean(lifeExp), sum(as.numeric(pop)))
+
+# observe que temos um problema no continente ASIA. Há dados missing NA 
+```
+
+Agora que calculamos essas estatisticas para 2002, voce pode estar interessado em como elas mudaram para cada continente ao longo do tempo.  
+
+```{r, message=FALSE, warning=FALSE}
+gapminder %>%
+      group_by(year, continent) %>%
+      summarize(meanLifeExp = mean(lifeExp), sum(as.numeric(pop)))
+
+# devo lembrar porque estou usando as.numeric()
+# observe que temos um problema no continente ASIA. Há dados missing NA 
+```
+
+Exercicio I
+```{r}
+
+# Find median life expectancy and maximum GDP per capita in each continent in 1957
+
+# Resposta
+
+gapminder %>%
+          filter(year == 1957) %>%
+          group_by(continent) %>%
+          summarize(medianLifeExp = median(lifeExp), 
+                  maxGdpPercap = max(gdpPercap))
+
+```
+
+Exercicio II
+
+```{r}
+# Find median life expectancy and maximum GDP per capita in each continent/year combination
+
+# Resposta
+
+gapminder %>%
+         group_by(continent, year) %>%
+          summarize(medianLifeExp = median(lifeExp), 
+                  maxGdpPercap = max(gdpPercap))
+```
+
+
+## PLOTANDO seus dados sumarizados
+
+vimos 
+
+```{r}
+by_year <-  gapminder %>%
+              group_by(year) %>%
+              summarize( medianLifExp = median(lifeExp), 
+                  totalPop = sum(as.numeric(pop)))
+
+by_year 
+```
+
+
+Visualisacao da populacao no tempo
+
+```{r}
+ggplot(by_year, aes(x = year, y = totalPop)) +
+      geom_point()
+```
+
+# *Começando o eixo y do zero*
+
+
+```{r}
+ggplot(by_year, aes(x = year, y = totalPop)) +
+      geom_point() +
+      expand_limits(y=0)
+```
+
+```{r}
+ggplot(by_year, aes(x = year, y = medianLifExp)) +
+      geom_point() +
+      expand_limits(y=0)
+```
+
+# *Sumarizando por ano e continente*
+
+```{r}
+by_year_continent <- gapminder %>%
+                  group_by(year, continent) %>%
+                  summarize(totalPop = sum(as.numeric(pop)), 
+                  meanLifeExp = mean(lifeExp))
+
+by_year_continent
+
+```
+
+Vamos agora visualizar "by_year_continent" pela estetica de cores
+
+```{r}
+
+ggplot(by_year_continent, aes(x = year, y = totalPop, color = continent)) +
+      geom_point() +
+      expand_limits(y=0)
+
+```
+
+Exercicio
+
+```{r}
+# Summarize medianGdpPercap within each continent within each year: by_year_continent
+by_year_continent <- gapminder %>%
+                  group_by(year, continent) %>%
+                  summarize(medianGdpPercap = median(gdpPercap))
+
+# Plot the change in medianGdpPercap in each continent over time
+ggplot(by_year_continent, aes(x = year, y = medianGdpPercap, color = continent)) +
+geom_point() +
+expand_limits(y=0)
+```
+
+Exercicio 
+
+```{r}
+# Summarize the median GDP and median life expectancy per continent in 2007
+by_continent_2007 <- gapminder %>%
+            filter(year == 2007) %>%
+            group_by(continent) %>%
+              summarize(medianGdpPercap = median(gdpPercap), 
+              medianLifeExp = median(lifeExp))
+
+# Use a scatter plot to compare the median GDP and median life expectancy
+ggplot(by_continent_2007, aes(x = medianGdpPercap, y = medianLifeExp, color = continent)) + 
+      geom_point() +
+      expand_limits(y=0)
+```
+
+# SCATER VS LINE PLOT
+
+A line plot is useful for visualizing trends over time. In this exercise, you'll examine how the median GDP per capita has changed over time.
+
+Para criar o grafico de linhas, basta usar o comando *geom_line()*.
+```{r}
+by_year_continent <- gapminder %>%
+                  group_by(year, continent) %>%
+                  summarize(totalPop = sum(as.numeric(pop)), 
+                  meanLifeExp = mean(lifeExp))
+
+ggplot(by_year_continent, aes(x = year, y = meanLifeExp, color = continent)) + geom_line() +
+  expand_limits(y = 0)
+
+```
+
+Exercicio 
+
+Use group_by() and summarize() to find the median GDP per capita within each year, calling the output column medianGdpPercap. Use the assignment operator <- to save it to a dataset called by_year.
+
+Use the by_year dataset to create a line plot showing the change in median GDP per capita over time. Be sure to use expand_limits(y = 0) to include 0 on the y-axis.
+
+```{r}
+# Summarize the median gdpPercap by year, then save it as by_year
+by_year <- gapminder %>%
+                group_by(year) %>%
+                summarize(medianGdpPercap = median(gdpPercap))
+
+# Create a line plot showing the change in medianGdpPercap over time
+ggplot(by_year, aes(x = year, y = medianGdpPercap)) +
+          geom_line() +
+          expand_limits(y=0)
+```
+
+
+Exercicio 
+
+Now you'll examine the change within each continent. 
+
+Use group_by() and summarize() to find the median GDP per capita within each year and continent, calling the output column medianGdpPercap. Use the assignment operator <- to save it to a dataset called by_year_continent.
+
+Use the by_year_continent dataset to create a line plot showing the change in median GDP per capita over time, with color representing continent. Be sure to use expand_limits(y = 0) to include 0 on the y-axis.
+
+```{r}
+# Summarize the median gdpPercap by year & continent, save as by_year_continent
+by_year_continent <- gapminder %>% 
+                      group_by(year, continent) %>%
+                      summarize(medianGdpPercap = median(gdpPercap))
+
+# Create a line plot showing the change in medianGdpPercap by continent over time
+ggplot(by_year_continent, aes(x = year, y = medianGdpPercap, 
+        color = continent)) + 
+        geom_line() +
+        expand_limits(y = 0)
+```
+
+
+#  BAR PLOTS - Grafico de barras
+
+O graficos de barra sao uteis para voce comparar valores entre categorias distintas, como continentes.Por exemplo, vimos que para encontrar a expectativa de vida média em cada continente em 2007, precisamos do seguinte código. Ele criará uma tabela com uma observação para cada continente. 
+
+```{r}
+by_continent_2007 <- gapminder %>%
+            filter(year == 2007) %>%
+            group_by(continent) %>%
+              summarize(meanLifeExp = mean(lifeExp))
+
+by_continent_2007
+```
+
+Em vez de imprimir a tabela, podemos este resumo visualmente.
+
+
+# Exercicio 
+
+Use group_by() and summarize() to find the median GDP per capita within each continent in the year 1952, calling the output column medianGdpPercap. Use the assignment operator <- to save it to a dataset called by_continent.
+
+Use the by_continent dataset to create a bar plot showing the median GDP per capita in each continent.
+
+```{r}
+# Summarize the median gdpPercap by continent in 1952
+by_continent <- gapminder %>%
+                filter(year == 1952) %>%
+                group_by(continent) %>%
+                summarize(medianGdpPercap = median(gdpPercap))
+
+# Create a bar plot showing medianGdp by continent
+ggplot(by_continent, aes(x = continent, y = medianGdpPercap)) +
+      geom_col()
+```
+
+# Exercicio
+
+*Visualizing GDP per capita by country in Oceania*
+
+You've created a plot where each bar represents one continent, showing the median GDP per capita for each. But the x-axis of the bar plot doesn't have to be the continent: you can instead create a bar plot where each bar represents a country.
+
+In this exercise, you'll create a bar plot comparing the GDP per capita between the two countries in the Oceania continent (Australia and New Zealand).
+
+```{r}
+# *Instruções* 
+
+# Filter for observations in the Oceania continent in the year 1952. Save this as oceania_1952.
+
+# Use the oceania_1952 dataset to create a bar plot, with country on the x-axis and gdpPercap on the y-axis.
+```
+  
+```{r}
+# Filter for observations in the Oceania continent in 1952
+oceania_1952 <- gapminder %>%
+                filter(year == 1952, continent == "Oceania") %>%
+                group_by(country, continent)
+
+# Create a bar plot of gdpPercap by country
+ggplot(oceania_1952, aes(x = country, y = gdpPercap)) +
+        geom_col()
+```
+
+# HISTOGRAMAS
+
+Ate agora haviamos investigados a relacao entre duas variaveis ao mesmo tempo. Aqui veremos como investigar uma dimensao dos dados por vez, usando um histograma.
+
+```{r}
+ggplot(gapminder_2007, aes(x = lifeExp)) + 
+  geom_histogram()
+```
+
+No grafico acima, temos no eixo x a expectativa de vida em anos, enquanto que no eixo y (vertical), temos o numero de paises que apresentam essa expectativa. O que podemos ver com esses dados?
+
+*A largura de cada histograma é escolhida automaticamente, e isso tem um grande efeito sobre como o histograma comunica a distribuicao. Podemos alterar essa largura via opção _ binwidth_ que colocamos dentro da camada geom_histogram()*
+
+```{r}
+ggplot(gapminder_2007, aes(x = lifeExp)) + 
+  geom_histogram(binwidth = 5)
+
+# ao definirmos binwidth = 5 significa que cada uma das barras nos histogramas representa uma largura de 5 anos. 
+
+# Ao fazermos isso convertemos o visual da distribuicao mais em bloco, e isso significa que estamos mais interessados na forma mais geral do que nos pequenos detalhes. 
+```
+
+# Exercicio *Visualizing population* 
+
+A histogram is useful for examining the distribution of a numeric variable. In this exercise, you'll create a histogram showing the distribution of country populations (by millions) in the year 1952.
+
+Code for generating this dataset, gapminder_1952, is provided.
+
+```{r}
+# Use the gapminder_1952 dataset to create a histogram of country population (pop_by_mil) in the year 1952. Inside the histogram geom, set the number of bins to 50.
+
+gapminder_1952 <- gapminder %>%
+  filter(year == 1952) %>%
+  mutate(pop_by_mil = pop / 1000000)
+
+# Create a histogram of population (pop_by_mil)
+ggplot(gapminder_1952, aes(x = pop_by_mil)) + 
+geom_histogram(bins = 50)
+
+```
+
+# Exercicio *Visualizing population with x-axis on a log scale* 
+
+In the last exercise you created a histogram of populations across countries. You might have noticed that there were several countries with a much higher population than others, which causes the distribution to be very skewed, with most of the distribution crammed into a small part of the graph. (Consider that it's hard to tell the median or the minimum population from that histogram).
+
+To make the histogram more informative, you can try putting the x-axis on a log scale.
+
+```{r}
+
+# Use the gapminder_1952 dataset (code is provided) to create a histogram of country population (pop) in the year 1952, putting the x-axis on a log scale with scale_x_log10().
+
+gapminder_1952 <- gapminder %>%
+  filter(year == 1952)
+
+# Create a histogram of population (pop), with x on a log scale
+ggplot(gapminder_1952, aes(x = pop)) + 
+      geom_histogram(bins = 50) +
+      scale_x_log10()
+
+```
+
+# BOX PLOTS 
+
+Antes lembre-se que usamos o histograma quando queríamos examinar a distribuicao de *uma variavel*, da expectativa de vida, em todos os paises. O histograma combina todas as expectativas de vida em todos os continentes, sem distingui-las.
+```{r}
+ggplot(gapminder_2007, aes(x = lifeExp)) + 
+  geom_histogram(binwidth = 5)
+
+```
+
+Mas e se desejarmos comparar a distribuicao das expectativas de vida entre os *continentes*?
+
+```{r}
+ggplot(gapminder_2007, aes(x = continent, y = lifeExp)) + 
+  geom_boxplot()
+
+# este é um gráfico que mostra a distribuicao das expectativas de vida dentro de cada continent, para que voce possa compara-la.
+
+# observe: x = continentes (categoria)
+#          y = os valores de expectativa de vida
+```
+
+Um grafico de caixa requer um pouco de pratica para interpretar. No exemplo acima temos: 
+
+- A *linha preta* no meio de cada caixa é a *mediana* da distribuicao de *cada continente*.
+- As partes superior e inferior de cada caixa representam o 75º percentil e o 25º percentil desse grupo, ou seja, metade da distribuicao está dentro dessa caixa. 
+_ As *linhas* subindo e descendo das caixas sao chamados de *bigodes* (whiskers) cobrem paises adicionais. 
+_ Os *pontos* abaixo ou acima dos bigodes representam valores extremos. Ou seja, paises com expectativa de vida exponencialmente baixa em relacao ao restante da distribuicao.
+
+Portanto, ha muita coisa que esse enredo nos fala sobre diferencas na expectativa de vida nos continentes. Podemos ver que a expectativa média de vida da Europa é uma das mais altas e que os paises da Oceania tem valores muito altos. E tambem podemos ver que a distribuicao para a Africa e extraordinariamente baixa, com cerca da metade de seus paises tendo uma expectativa media de vida entre 50 e 60 anos.
+
+# Exercicio *Comparing GDP per capita across continents*
+
+A boxplot is useful for comparing a distribution of values across several groups. In this exercise, you'll examine the distribution of GDP per capita by continent. Since GDP per capita varies across several orders of magnitude, you'll need to put the y-axis on a log scale.
+
+Use the gapminder_1952 dataset (code is provided) to create a boxplot comparing GDP per capita (gdpPercap) among continents. Put the y-axis on a log scale with scale_y_log10().
+
+```{r}
+gapminder_1952 <- gapminder %>%
+  filter(year == 1952)
+
+# Create a boxplot comparing gdpPercap among continents
+ggplot(gapminder_1952, aes(x = continent, y = gdpPercap)) +
+      geom_boxplot() +
+      scale_y_log10()
+```
+
+# Exercicio *Adding a title to your graph*
+
+There are many other options for customizing a ggplot2 graph, which you can learn about in other DataCamp courses. You can also learn about them from online resources, which is an important skill to develop.
+
+As the final exercise in this course, you'll practice looking up ggplot2 instructions by completing a task we haven't shown you how to do.
+
+Add a title to the graph: Comparing GDP per capita across continents. Use a search engine, such as Google or Bing, to learn how to do so.
+
+
+```{r}
+
+# Add a title to this graph: "Comparing GDP per capita across continents"
+p <- ggplot(gapminder_1952, aes(x = continent, y = gdpPercap)) +
+  geom_boxplot() +
+  scale_y_log10()
+  
+# Add titles
+g <- p + labs(title = "Comparing GDP per capita across continents")
+g  
+
+# Observe que precisamos da camada labs()
+```
+
+
+## DATA VISUALIZATION WITH GGPLOT2 - 5h
+## IMPORTING & CLEANING DATA - 14h
+## EXPLORATORY DATA ANALYSIS IN R: CASE STUDY

@@ -82,3 +82,12 @@ What is special about using `README.Rmd` instead of just `README.md`? You can in
 [Advanced R](https://adv-r.hadley.nz/index.html)
 
 [Teaching statistics online (for the first time): Lessons learned](http://www.russpoldrack.org/2021/04/teaching-statistics-online-for-first.html)
+
+[performance R Package ](https://easystats.github.io/performance/)
+
+# Temas de aulas
+
+[Manipulação de Strings e text Mining](https://gomesfellipe.github.io/post/2017-12-17-string/string/)
+
+[Manipulando Dados com dplyr](https://gomesfellipe.github.io/post/2017-12-07-manipulando-dados-com-dplyr/manipulando-dados-com-dplyr/)
+[Tipos de Relações entre Variáveis](https://gomesfellipe.github.io/post/2017-12-02-tipos-de-relacoes-entre-variaveis/)

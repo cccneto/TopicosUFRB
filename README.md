@@ -22,6 +22,9 @@ You can include R chunks like so:
 
 [Ciência de Dados em R](https://livro.curso-r.com/)
 
+[Análise de Dados Ambientais com R - Jônatan
+Tatsch](https://lhmet.github.io/adar-ebook/)
+
 [SDS 375 - Data Visualization in R](https://wilkelab.org/SDS375/)
 
 [Big boof of R](https://www.bigbookofr.com/index.html)
@@ -89,3 +92,15 @@ R](https://annakrystalli.me/rrresearchACCE20/)
 
 [Teaching statistics online (for the first time): Lessons
 learned](http://www.russpoldrack.org/2021/04/teaching-statistics-online-for-first.html)
+
+[performance R Package](https://easystats.github.io/performance/)
+
+# Temas de aulas
+
+[Manipulação de Strings e text
+Mining](https://gomesfellipe.github.io/post/2017-12-17-string/string/)
+
+[Manipulando Dados com
+dplyr](https://gomesfellipe.github.io/post/2017-12-07-manipulando-dados-com-dplyr/manipulando-dados-com-dplyr/)
+[Tipos de Relações entre
+Variáveis](https://gomesfellipe.github.io/post/2017-12-02-tipos-de-relacoes-entre-variaveis/)

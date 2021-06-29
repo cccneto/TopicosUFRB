@@ -1,0 +1,439 @@
+---
+title: "Introdução a Programação com R"
+subtitle: "Tópicos Especiais em Meio Ambiente II"
+author: "Claudiano Neto, Dr."
+institute: "Universidade Federal do Recôncavo da Bahia <br> Cruz das Almas, BA, BRA"
+date:  "Junho, 28, 2021"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+
+```{r setup, include = FALSE, purl = FALSE}
+options(htmltools.dir.version = FALSE, cache = TRUE)
+
+```
+
+```{css, echo = FALSE, purl = FALSE}
+.tiny .remark-code { /*Change made here*/
+    font-size: 60% !important;
+}
+```
+
+```{r xaringanthemer, include = FALSE, purl = FALSE}
+library(knitr)
+library(xaringanthemer)
+library(xaringanExtra)
+xaringanthemer::style_mono_accent(
+  base_color = "#A31C1A",
+  #  primary_color = "#A70000",
+  #secondary_color = "#ff0000",
+  white_color = "white",
+  colors = c(
+    red = "#535353",
+    purple = "#88398a",
+    orange = "#ff8811",
+    green = "#136f63",
+    blue = "#4B4FFF",
+    white = "#FFFFFF",
+    black = "#181818"
+  ),
+  header_font_google = google_font("Roboto Condensed"),
+  text_font_google   = google_font("Roboto Condensed", "300", "300i"),
+  code_font_google   = google_font("Ubuntu Mono"),
+  text_font_size = "30px",
+  code_font_size = "30px",
+)
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE, purl = FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+---
+class: left, middle
+
+# Agradecimentos
+
+- Esses slides são fortemente baseados no trabalho da Dra. Silvia Canelón ([@spcanelon](https://twitter.com/spcanelon)),  "[Tour of the Tidyverse](https://github.com/spcanelon/tour-of-the-tidyverse)", bem como nos slides da Dra. Sara Mortara e da Dra. Andrea Sánchez-Tapia ([Instituto Hub](https://github.com/liibre/instituto_hub)). 
+
+- Para isso usei [xaringan](https://github.com/yihui/xaringan) `r emo::ji("package")` do Dr. Yihui Xie e [xaringanExtra](https://github.com/gadenbuie/xaringanExtra) `r emo::ji("package")` do Garrick Aden-Buie, e adaptado do [R-Ladies `xaringan` theme designed by Alison Hill](https://alison.rbind.io/post/2017-12-18-r-ladies-presentation-ninja/)
+
+- Utilizaremos várias referências, todas disponíveis nesse link [GitHub](https://github.com/cccneto/Topicos_UFRB)
+
+
+
+---
+
+## apresentação
+
+```{r logo-liibre, echo = FALSE, purl = FALSE}
+
+xaringanExtra::use_logo(image_url = "./figs/ufrb.png", width = 150)
+# knitr::include_graphics("https://pt.wikipedia.org/wiki/Ficheiro:S%C3%ADmbolo_da_UFRB.png")
+```
+
+
+- __Claudiano Carneiro da Cruz Neto__ Economista (UESC), MSc. Desenvolvimento Regional e Meio Ambiente  (UESC), Dr. em Economia (UNB). Sou usuário do R desde 2018, e me considero apaixonado por essa linguagem de programação. Amo trabalhar estudando a interface entre Economia e Meio Ambiente, por isso a maioria dos meus trabalhos está direcionado para essa linha de pesquisa.
+
+- [Website](https://cneto.netlify.app/), [Twitter](https://twitter.com/ClaudianoNeto), [Github](https://github.com/cccneto)  
+
+--
+
+- __Grupo de Estudos em Economia e Meio Ambiente__
+[Se quiser saber mais, clique aqui](http://dgp.cnpq.br/dgp/espelhogrupo/582306)
+--
+
+---
+
+## sobre nosso curso
+
+### Ambientação ao R e ao RStudio <br>
+- Vantagens de usarmos programação para analisar dados
+- O que é e por que usar o RStudio
+- Escrevendo e rodando códigos
+
+### Introdução à programação em R
+
+- Objetos e vetores
+- Classes: números, caracteres, lógicos e data frames
+- Operadores de seleção; utilizar e criar funções no R
+- Operadores lógicos e aritméticos
+- Loopings de programação: for e while
+- O operador pipe (%>%)
+
+
+
+
+---
+
+## sobre nosso curso - continuação
+
+### Programação no dia a dia
+- Exemplos de scripts reais
+- Usando e instalando pacotes
+- Estruturação de projetos
+- Boas práticas de programação em R
+
+### Importação de bases para dentro do R
+- Importando arquivos de texto: .csv e .txt
+- Importando arquivos excel: .xls e .xlsx
+
+---
+
+## sobre nosso curso - continuação
+
+### Manipulação de bases de dados (o pacote tidyverse)
+- Selecionando colunas
+- Filtrando e ordenando linhas
+- Modificando e criando colunas
+- Criando sumarizações
+- Juntando duas bases
+
+### Gráficos (o pacote ggplot2)
+- Gráficos de pontos (dispersão)
+- Gráficos de barras
+- Boxplots e histogramas
+- Customizando gráficos
+
+---
+
+
+## sobre nosso curso - continuação
+
+### Construindo artigos e relatórios em R Markdown
+- Introdução ao R Markdown
+- Construindo relatórios em HTML, PDF e Word
+
+---
+
+## sobre hoje
+
+1. conhecendo a linguagem R e fluxo de trabalho
+
+2. introdução ao R
+
+3. manipulação de dados
+
+4. criando figuras básicas
+
+---
+
+## códigos de apoio
+
+todos os códigos diponíveis em: 
+
+
+[um bestiário de funções úteis](https://hackmd.io/@andreasancheztapia/bestiario_HUB)
+
+---
+## antes de começar
+
++ procure a janela de chat do zoom, e não hesite em fazer perguntas
+
+--
+
++ tem um botão verde para contar se tudo está certo. Periodicamente vamos perguntar se todo mundo está acompanhando, por favor use este botão ou responda no chat
+
+--
+
++ pode abrir sua câmera :) procure manter seu microfone silenciado. 
+
+---
+class: inverse, middle, center
+
+# 1. conhecendo a linguagem R e fluxo de trabalho
+
+
+---
+## por que R?
+
+- linguagem de __código aberto__, __livre__ & __sem custo__: um dos pilares da ciência aberta
+
+--
+
+- __baseada em scripts__: essencial para reprodutibilidade, facilidade para ampliar a escala, transparência, correção/robusteza 
+
+--
+
+- acessível (em comparação a outras linguagens de programação)
+
+--
+
+- muito comum na Biologia, Ciência de Dados e outras áreas. A escolha para quem precisa fazer analises estatísticas
+
+--
+
++ __interdisciplinar e modular__: muitos pacotes são escritos por especialistas 
+
+--
+
++ uma filosofia de passar facilmente do uso à  programação
+
+---
+## por que R?
+
++ ferramentas para __comunicar os resultados__: manuscritos, presentações, _apps_
+
+--
+
++ comunicação com otras linguagens de programação (ex. python e __reticulate__) 
+
+--
+
++ ótima capacidade gráfica 
+
+--
+
++ __suporte oficial__: documentação, vignettes, listas de email
+
+--
+
++ __suporte não oficial__: uma comunidade ativa: listas de email, grupos de usuáries (useR), capítulos de .purple[R-Ladies+], comunidade de  [RStudio](community.rstudio.com/), 
+Stack Overflow,
+
+```{r rladies+, out.width=150, echo = FALSE, purl = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/rladies/starter-kit/master/stickers/rainbow-inclusive.png")
+```
+
+---
+## `R` tem uma estrutura modular: __pacotes__
+--
+
++ a instalação de base de `R` inclui pacotes mantidos pelo __`R` Core Development Team__
+
+--
+
++ repositório oficial de pacotes: __CRAN__ (The Comprehensive `R` Archive Network [https://cran.r-project.org/](https://cran.r-project.org/)) or Bioconductor, GitHub, rOpenSci.org
+
+--
+
++ pacotes fora da instalação de base precisam ser __instalados__ e __carregados__
+
+--
+
++ os pacotes são coleções de __funções__ 
+
+--
+
++ as funções têm __opções__: "parâmetros", "argumentos"
+
+--
+
++ vamos manter a convenção `nome_da_funcao()` e `pacote::nome_da_funcao()` quando for preciso especificar o pacote ao qual a função pertence. 
+
+---
+## Então vamos instalar o `R`
+--
+
++ A instalação padrão do R é feita a partir do CRAN, uma rede de servidores espalhada pelo mundo que armazena versões idênticas e atualizadas de códigos e documentações para o R.
+
+--
+
++ Para instalar o R no Windows, siga os seguintes passos:
+
+--
+
++ Acesse o CRAN: https://www.r-project.org/
+
+--
+
++ No menu à esquerda, encontre a opção Download e clique em CRAN.
+
+--
+
++ Escolha a opção de servidor (mirror) mais próxima de você.
+
+---
+## Então vamos instalar o `R`. 
+--
+
++ Clique na opção base. Na nova página, clique em **Download R x.x.x for Windows*, sendo x.x.x o número da versão que será baixada. Em qualquer problema, tente escolher outro servidor no passo 3.
+
+--
+
++ Feito o download, clique duas vezes no arquivo baixado e siga as instruções para instalação.
+
+--
+
++ Para realizar o Download `R` 4.1.0 para Windows, clique no link:(https://cran.r-project.org/bin/windows/base/R-4.1.0-win.exe)
+
+--
+
++ pacotes fora da instalação de base precisam ser __instalados__ e __carregados__
+
+---
+## Então vamos instalar o `R Studio`. 
+--
+
++ Agora vamos instalar a versão open source do RStudio, a IDE que utilizaremos para escrever e executar códigos em R.
+
++ Para instalar o RStudio no Windows, siga os seguintes passos:
+
++ Acesse a página de downloads da RStudio: https://rstudio.com/products/rstudio/download/#download
+
++ Se você tiver acesso administrador, baixe a versão referente ao seu sistema operacional que está na lista de All Installers.
+
++ Se você não tiver acesso de administrador, baixe a versão referente ao seu sistema operacional que está na lista de Zip/Tarballs.
+
++ Clique duas vezes no arquivo baixado e siga as instruções para instalação.
+
+---
+background-image:url("figs/carcaca.jpg")
+background-size: 50%
+background-position: 50% 70%
+
+## Pense no R assim
+
+---
+background-image:url("figs/caminhao.jpg")
+background-size: 50%
+background-position: 50% 70%
+
+## E agora pense no R Studio 
+
+
+
+---
+background-image:url("figs/rstudio.png")
+background-size: 60%
+background-position: 50% 90%
+
+## Visão do RStudio 
+
+---
+## RStudio 
+
++ tela separada em três paineis. criar um __script__ abre o quarto painel. 
+
++ podemos executar código no console mas vamos usar o __script__ para guardar os passos. 
+
++ escrever no script e clicar `control + enter` para mandar o conteúdo para o console.
+
++ outras abas: help, environment, plots, files... 
+
+<!-- aqui NO! crear objetos, mostrar environment, mostrar ls() y mostrar el help y parar en files -->
+
+---
+class: inverse, middle, center
+## configuração e organização de projetos 
+
+---
+## pasta de trabalho
+
++ R tem que saber __em que pasta você está trabalhando__, para poder buscar os arquivos que você quer ler, e saber onde guardar os resultados de suas análises: __working directory__: pasta de trabalho
+
+--
+
++ para saber onde você está: `getwd()`
+
+--
+
++ você pode mudar esta localização usando `setwd()` mas não é recomendado (erros!) [Jenny Bryan](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
+
+--
+
++ melhor: em vez de abrir RStudio e trocar a pasta, abrir um script de R (extensão `.R`) ou um projeto de __RStudio project__ (extensão `.Rproj`) __já na pasta onde você vai trabalhar__. (Igual ao que você faria abrindo um arquivo 
+
+---
+## organização de projetos e Boas Práticas
+
++ cada projeto de análise de dados deveria estar em __uma única pasta__
+
+--
+
++ __subpastas__ para organizar o conteúdo.
+
+--
+
++ em vez de usar __caminhos absolutos__ é melhor usar __caminhos relativos__
++ evite `C://usuario/seu_nome/suas_pastas/seu_projeto` -> caminho absoluto
++ `.` "aqui" (o resultado de `getwd()`)
++ `./subpastas` (ex. `/figs`)
++ o nível acima `..`
+
+--
+
++ os __dados originais__ não devem ser modificados. qualquer modificação deve ser salva à parte, junto com os scripts que fizeram a modificação.
+
+---
+## o projeto atual
+
+```
+./nome_do_projeto/
+├── README.md
+├── codigo
+├── dados
+│   ├── brutos
+│   └── processados
+├── figs
+└── nome_do_projeto.Rproj
+```
+
+---
+class: inverse, middle, center
+
+## Como iremos trabalhar com o R Studio?
+
+---
+background-image:url("figs/flow.png")
+background-size: 50%
+background-position: 50% 90%
+
+## Iremos trabalhar com projetos! 
+
+
+---
