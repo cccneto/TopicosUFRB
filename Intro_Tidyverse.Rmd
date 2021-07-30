@@ -5,8 +5,8 @@ subtitle: "Tópicos Especiais em Meio Ambiente I" # only for html output
 author: "Prof. Claudiano Neto"
 date: "`r Sys.Date()`"
 output:
-  output: html_document 
   # tufte::tufte_html: default
+  output: html_document 
   # tufte::tufte_handout:
   #   latex_engine: xelatex
   # tufte::tufte_book:
@@ -110,7 +110,7 @@ gapminder %>%
 ## PLOTANDO seus dados I
 
 ```{r, message= FALSE, warning=FALSE}
-library(ggplot2)
+library(ggplot2)ggo
 ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) + 
   geom_point()
 ``` 
@@ -668,7 +668,3 @@ g
 # Observe que precisamos da camada labs()
 ```
 
-
-## DATA VISUALIZATION WITH GGPLOT2 - 5h
-## IMPORTING & CLEANING DATA - 14h
-## EXPLORATORY DATA ANALYSIS IN R: CASE STUDY

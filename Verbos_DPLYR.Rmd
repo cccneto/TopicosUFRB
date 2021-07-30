@@ -4,6 +4,7 @@ runningheader: "" # only for pdf output
 subtitle: "Tópicos Especiais em Meio Ambiente I" # only for html output
 author: "Prof. Claudiano Neto"
 date: "`r Sys.Date()`"
+encoding: "UTF8"
 output: html_document
   # tufte::tufte_html: default
   # tufte::tufte_handout:
@@ -22,6 +23,12 @@ library(gapminder)
 library(dplyr)
 library(tidyverse)
 ```
+
+```{r message=TRUE, warning=FALSE}
+install.packages("gapminder")
+library(gapminder) 
+```
+
 
 ```{r, message=FALSE, warning=FALSE}
 gapminder # puxando a base de dados
@@ -129,7 +136,7 @@ tb %>% sample_frac(size = 0.5) # por tamanho fracionado
 
 # *Como realizar transformações - alterar e criar?*
 
-## Para *modificar* uma variável
+## Para *modificar* uma variável, usamos *MUTATE()*
 
 ```{r}
 tb %>% mutate(x = x * 2, 
@@ -153,7 +160,7 @@ tb %>% rename(nomeNovo = x)
 # *Como realizar medidas resumos?*
 
 ## Como agrupar por variáveis estratificadoras
-```{r}
+```{r warning=FALSE, message=FALSE}
 tb %>% count(u) # lembre como era a variável "u"
 ```
 
@@ -180,7 +187,7 @@ tb %>%
 ```
 
 ## Como agrupar usando funções resumo vetoriais
-```{r}
+```{r warning=FALSE, message=FALSE}
 tb %>% 
     group_by(u) %>% 
     summarise_if(is.numeric, funs(min, median, max))

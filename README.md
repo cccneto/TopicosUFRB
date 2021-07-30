@@ -16,11 +16,19 @@ You can include R chunks like so:
 
 # Lista interessante
 
+[R for Data Science](https://r4ds.had.co.nz/index.html)
+
 [Hands-On Programming with R](https://rstudio-education.github.io/hopr/)
 
-[LIvro Zen do R](https://curso-r.github.io/zen-do-r/index.html)
+[Mastering Software Development in
+R](https://bookdown.org/rdpeng/RProgDA/) [LIvro Zen do
+R](https://curso-r.github.io/zen-do-r/index.html)
 
 [Ciência de Dados em R](https://livro.curso-r.com/)
+
+[Advanced R](https://adv-r.hadley.nz/index.html)
+
+[Advanced R Solutions](https://advanced-r-solutions.rbind.io/index.html)
 
 [Análise de Dados Ambientais com R - Jônatan
 Tatsch](https://lhmet.github.io/adar-ebook/)
@@ -87,8 +95,6 @@ R](https://youtu.be/2HpRXIpU4jI)
 
 [Reproducible Research Data and Project Management in
 R](https://annakrystalli.me/rrresearchACCE20/)
-
-[Advanced R](https://adv-r.hadley.nz/index.html)
 
 [Teaching statistics online (for the first time): Lessons
 learned](http://www.russpoldrack.org/2021/04/teaching-statistics-online-for-first.html)
