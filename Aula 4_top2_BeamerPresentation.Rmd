@@ -1,0 +1,106 @@
+---
+title: "Testando Slides do Output Beamer Presentation"
+subtitle: "Disciplina de topicos"
+author: "Claudiano Cruz Neto"
+date: "20/07/2021"
+output: 
+     beamer_presentation:
+         theme: "Goettingen"
+         colortheme: "fly"
+         fonttheme: "structuresmallcapsserif"
+         toc: true
+         incremental: true
+         df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Pacotes 
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+```
+
+```{r include=FALSE}
+library(ggplot2)
+```
+
+## Como criar Slides
+
+- Devo começar a sessão colocando "##".
+
+- When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slides | Adicionando um subtitulo
+
+```{r cars, echo = TRUE}
+summary(cars) # código 
+```
+
+## Slides | Adicionando Tabela
+
+- Testando 
+
+## Inserindo figuras 
+
+![Logo da UFRB](ufrb.png)
+
+## Ploting
+
+```{r pressure}
+plot(pressure)
+```
+
+## Slide with A Scatterplot
+```{r, cars2, fig.cap="A scatterplot.", echo=FALSE}
+plot(cars)
+```
+
+## Colocando aquela equação experta
+
+\begin{equation}
+  E=mc^2  
+\end{equation}
+
+$$E = mc^2$$
+
+
+
+## Layout de duas colunas
+
+\begin{columns}
+\column{0.75\textwidth}
+
+Texto qualquer para mostrar o efeito.
+
+
+\column{0.25\textwidth}
+
+- O R é um projeto colaborativo com vários contribuidores. 
+
+\end{columns}
+
+
+
+## Adicionando vários blocos
+
+\begin{alertblock}{Titulo do Bloco}
+teste
+\end{alertblock}
+
+- Adicionando bloco de exemplos
+
+\begin{examples}
+Nesse exemplo, não podemos mudar o titulo do bloco.
+\end{examples}
+
+## Franciele Gomes
+
+- Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide. Posso digitar livremente no script do slide.
