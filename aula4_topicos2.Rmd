@@ -1,0 +1,47 @@
+---
+title: "Slides de Teste do Output Beamer Presentation"
+author: "Claudiano Cruz Neto"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+     beamer_presentation:
+         theme: "CambridgeUS"
+         colortheme: "orchid"
+         fonttheme: "structurebold"
+         toc: true
+         incremental: true
+         df_print: kable
+---
+
+## Pacotes 
+
+- Podemos acrescentar pausas na mesma linha\pause
+no documento a fim de criar algum tipo de suspense \pause
+
+- ou então pulando uma linha \pause
+
+## Itens numa lista ordenada
+
+\begin{itemize}
+ \item <1-> Text visible on slide 1
+ \item <2-> Text visible on slide 2
+ \item <3-> Text visible on slide 3
+ \item <4-> Text visible on slide 4
+\end{itemize}
+
+## Destacando frases/palavras importantes.
+
+Neste slide, o texto importante será destacado.
+\alert{Destacar} serve para demonstrar importância.
+Mas por favor, não abuse.
+
+\begin{block}{Destaque}
+Amostra de texto
+\end{block}
+
+\begin{alertblock}{Alguma coisa destacado}
+Sample text in red box
+\end{alertblock}
+
+\begin{examples}
+Sample text in green box. The title of the block is ``Examples".
+\end{examples}
