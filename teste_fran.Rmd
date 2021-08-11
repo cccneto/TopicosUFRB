@@ -1,0 +1,44 @@
+---
+title: "Testando Slides do Output Beamer Presentation"
+subtitle: "Disciplina de topicos"
+author: "Claudiano Cruz Neto"
+date: "20/07/2021"
+output: 
+     beamer_presentation:
+         theme: "Goettingen"
+         colortheme: "fly"
+         fonttheme: "structuresmallcapsserif"
+         toc: true
+         incremental: true
+         df_print: kable
+---
+
+## Como criar Slides
+
+- Devo começar a sessão colocando "##".
+
+- When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slides | Adicionando um subtitulo
+
+- Professor Claudiano é the best.
+- Professor Claudiano é the best.
+- Professor Claudiano é the best.
+
+## Slides | Adicionando Tabela
+
+- Testando 
+
+## Inserindo figuras 
+
+![Figura 1: Foto do Estudante](luiz.png)
+
+## Franciele Gomes
+
+- Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide.Posso digitar livremente no script do slide. Posso digitar livremente no script do slide.
