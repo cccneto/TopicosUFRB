@@ -1,0 +1,161 @@
+---
+title: "Estruturas de controle condicionais"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    code_download: true
+encoding: "ISO-8859-1"
+---
+
+# Setup
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(palmerpenguins)# for Palmer penguin data
+```
+
+# Introdução
+
+Imagine que você precisa atribuir notas aos estudantes de uma disciplina que você ministre aulas. Ou seja, precisamos criar uma estrutura de dados (notas dos discentes) na qual possamos saber se a pessoa foi *Aprovada*, se deve fazer a *Recuperação*, ou se foi *Reprovada*. 
+
+# `if` e `else` 
+
+- Caso simples `if` + `else`, iremos considerar um caso mais simples: teremos apenas duas condições.
+
+```{r}
+# considerando a nota que a pessoa tirou
+nota <- 4.5
+
+# E sabendo que a nota minima para aprovação deve ser 5, temos:
+if(nota >= 5) {
+  print("Aprovação")
+} else {
+  print("Reprovação")
+} # se caso anterior nao for verdadeiro, a pessoa será reprovada
+```
+
+# `if` e `else` e `else if`
+
+Vamos adicionar mais complexidade. Agora teremos a possibilidade de exame de recuperação. 
+
+```{r}
+# considerando a nota que a pessoa tirou
+nota <- 4.5
+
+# E sabendo que a nota minima para aprovação deve ser 5, temos:
+if(nota >= 5) {
+  print("Aprovação")
+} else if (nota >= 3 & nota < 5) { 
+  # se a nota for maior ou igual a 5, mas menor que 5,
+  # ela deverá fazer a prova de recuperação
+  print("Recuperação")
+} else {
+  print("Reprovação")
+} # se nenhum dos casos anteriores for verdadeiro,
+  # ou seja, a nota for menor que 3,
+  # a pessoa será reprovada
+```
+
+# Função `range()`
+
+Função de range é uma funcao de intervalo no R. Ela retorna um vetor contendo o `mínimo` e o `máximo` de todos os argumentos fornecidos.
+
+```{r}
+#  Forma de uso: seq(inicio, fim, passo)
+
+seq(4, 10, 2)
+```
+
+Algo que devemos tomar cuidado é que podemos usar apenas um argumento, que será usado para definir o tamanho da sequência de números. Neste caso, a função usará como valores padrões para os argumentos de passo (sendo 1). Veja o exemplo:
+
+```{r}
+# se você usar apenas com um argumento
+seq(4)
+```
+
+# Função `case_when()` 
+
+![](https://github.com/allisonhorst/stats-illustrations/raw/master/rstats-artwork/dplyr_case_when.png)
+
+Vamos entender como funciona essa função. Tomemos o exemplo abaixo:
+
+```{r}
+tabela_notas <- babynames::babynames %>% 
+ dplyr::filter(year == 2017) %>% 
+  dplyr::arrange(desc(n)) %>% 
+  dplyr::slice(1:10) %>% 
+  dplyr::select(name, sex) %>% 
+  dplyr::mutate(nota = seq(0, 9, 1))
+
+reactable::reactable(tabela_notas)
+```
+
+Agora precisamos configurar a função:
+
+```{r}
+tabela_notas %>% 
+  dplyr::mutate(
+    resultado = dplyr::case_when(nota >= 5 ~ "Aprovação",
+                                 nota >= 3 & nota < 5 ~ "Recuperação",
+                                 TRUE ~ "Reprovação" )) %>% 
+  reactable::reactable()
+```
+
+
+# Botando a mão na massa
+
+Usando os dados da `tabela_notas_sexo` crie uma coluna chamada "genero" que receba, "masculino" e "feminino".
+```{r}
+tabela_notas_sexo <- babynames::babynames %>% 
+ dplyr::filter(year == 2017) %>% 
+  dplyr::arrange(desc(n)) %>% 
+  dplyr::slice(1:10) %>% 
+  dplyr::select(name, sex)
+
+```
+  - Resposta:
+```{r eval=FALSE, include=FALSE}
+tabela_notas_sexo %>% 
+  dplyr::mutate(genero = dplyr::case_when(sex == "F" ~ "feminino", TRUE ~ "masculino"))
+```
+
+
+```{r}
+dados <- Ibamam::ibge_code
+
+dados_uf <- sample(dados$abrev_state, replace = T) %>% 
+             as_tibble()
+
+# https://www.todamateria.com.br/siglas-estados-brasileiros/
+```
+
+
+- Crie uma nova variavel chamada `regiao`, e que conste o nome das regiões brasileiras para os estados do Norte.
+
+```{r eval=FALSE, include=FALSE}
+# classificando estados do "Norte"  
+dados_norte <- dados_uf %>% 
+         mutate(regiao = case_when(value  %in% c("AC", "AP", "AM", "PA", "RO", "RR", "TO") ~ "Norte", 
+                                   TRUE ~ "Outros")) %>% View()
+                                   
+             
+# classificando todos os estados
+dados_uf <- dados_uf %>% 
+     mutate(regiao = case_when(value %in% c("AC", "AP", "AM", "PA", "RO", "RR", "TO") ~ "Norte",
+                               value %in% c("AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE") ~ "Nordeste",
+                               value %in% c("DF", "GO", "MT", "MS", "PB") ~ "Centro-Oeste",
+                               value %in% c("SP", "RJ", "MG", "ES", "PB") ~ "Sudeste", 
+                               TRUE ~ "Sul")
+            )
+
+
+
+```
+

@@ -1,0 +1,359 @@
+---
+title: "Aula 6"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    code_download: true
+---
+
+## Setup
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(palmerpenguins)# for Palmer penguin data
+library(dplyr)
+```
+
+
+```{r data}
+# Lisa's garden data
+# Palmer penguins
+data("penguins")
+
+# US tuition by state data
+us_avg_tuition <- read_csv("https://www.dropbox.com/s/9e0paradcwvuzll/us_avg_tuition.csv?dl=1") %>% 
+   mutate(across(starts_with("20"), parse_number))
+```
+
+## Metas de aprendizagem
+
+Após este tutorial, você deve ser capaz de fazer o seguinte:
+
+* Use `pivot_longer()` e `pivot_wider()` para alterar a forma como os dados são dispostos.
+* Junte tabelas de dados usando as funções de junção dplyr e entenda as diferenças entre os diferentes tipos de junções.
+* Use várias funções forcats, incluindo aquelas não abordadas no tutorial, para alterar a ordem ou os valores dos níveis das variáveis categóricas.
+* Use as funções stringr abordadas neste tutorial (além de `separate()`) e saiba onde encontrar informações sobre outras funções *stringr* (DICA: a folha de cheatsheet é um ótimo começo).
+
+## Alterar o layout de dados com funções dinâmicas
+
+Esta parte do tutorial irá apresentá-lo a duas funções: `pivot_longer ()` e `pivot_wider ()`. Essas funções são usadas para alterar a forma como os dados são dispostos. O GIF abaixo ilustra o que as funções fazem. Eu o encorajo a revisitar esta ilustração depois de ler as descrições mais detalhadas.
+
+<center>
+
+![Image credit: Mara Averick (tweet from 2019-10-04)](https://www.dropbox.com/s/a6o75zj443b2rv3/tidyr-longer-wider-modified.gif?dl=1)
+
+</center>
+
+### `pivot_longer()`
+
+** `pivot_longer ()` **: torna o conjunto de dados mais longo, reduzindo o número de colunas e aumentando o número de linhas. Freqüentemente usado quando os nomes das colunas devem ser valores de uma variável.
+
+Os dados abaixo mostram os custos médios das mensalidades universitárias nos EUA por estado. Observe que os anos são nomes de colunas.
+
+```{r, echo=FALSE}
+us_avg_tuition 
+```
+
+Agora, gostaríamos de mudar isso para que haja uma variável chamada `ano` que indicaria o ano e os valores da aula seriam uma variável única ao invés de espalhar por várias variáveis -` pivot_longer () `para o resgate!
+
+O código genérico para `pivot_longer ()` é mostrado aqui:
+
+```{r, eval=FALSE}
+data %>% 
+  pivot_longer(cols = ___________,
+               names_to = "name_of_cols_variable",
+               values_to = "name_of_values_variable")
+```
+
+Vamos tentar esse com os dados *us_avg_tuition*:
+
+```{r pivot-longer-ex1}
+us_avg_tuition %>% 
+  pivot_longer(cols = starts_with("20"),
+               names_to = "year",
+               values_to = "avg_tuition")
+```
+
+Agora há uma linha para cada combinação única de estado e ano e `ano` e` avg_tuition` são variáveis. Este conjunto de dados tem mais linhas e menos colunas do que o conjunto de dados original.
+
+Vamos examinar cada argumento da função com mais detalhes.
+
+O argumento `cols` indica quais colunas devem ser dinamizadas para que esses nomes de coluna se tornem valores de uma nova variável. Você pode fazer uma lista de nomes de colunas ou usar funções auxiliares para selecionar colunas (veja a função `select ()` no cheatsheet `dplyr` para mais detalhes ou procure por` tidy-select` na aba Help). Eu usei a função auxiliar `starts_with ()` neste exemplo.
+
+O argumento `names_to` é como você deseja nomear a nova variável onde os nomes das colunas serão armazenados. Isso precisa estar entre aspas.
+
+The `values_to` argument is what you want to name the new variable where the values that used to be spread across multiple columns will now be stored in one variable.  
+
+### `pivot_wider()`
+
+`pivot_wider ()`: torna o conjunto de dados mais amplo, reduzindo o número de linhas e aumentando o número de colunas. Freqüentemente usado quando as observações são distribuídas em várias linhas e os valores de uma variável devem ser realmente suas próprias variáveis.
+
+Aqui está um exemplo em que os valores da terceira coluna (Taxa de crescimento anual da população (porcentagem), Taxa de fecundidade total (filhos por mulher), etc.) devem ser cada um sua própria variável.
+
+Agora, vamos ver um exemplo semelhante. Eu criei um novo dataset chamado `penguins_fake` que é uma reorganização dos dados `penguins`.
+
+```{r, echo=FALSE}
+penguins_fake <- penguins %>% 
+  mutate(obs = row_number()) %>% # a funcao row_number() vai gerar os numeros da linha da observação
+  pivot_longer(cols = bill_length_mm:body_mass_g, # o ":" indica que queremos o intervalo entre as variaveis 
+               names_to = "measurement",
+               values_to = "value")
+```
+
+```{r}
+penguins_fake
+```
+Em `penguins_fake`, a coluna chamada` medição` possui todos os nomes das medições. Gostaríamos de devolvê-los aos nomes das colunas para que haja novamente apenas uma linha para cada pinguim. Usaremos `pivot_wider ()` para fazer isso! Observe que também há uma coluna chamada `obs` que identifica cada observação única dos dados originais - isso é muito importante!
+
+O código genérico para `pivot_wider ()` é mostrado aqui:
+
+```{r, eval=FALSE}
+data %>% 
+  pivot_wider(id_cols = ___________,
+              names_from = variable_with_names,
+              values_from = variable_with_values)
+```
+
+Vamos fazer isso com os dados `penguins_fake`:
+
+```{r pivot-wider-ex1}
+penguins_fake %>% 
+  pivot_wider(id_cols = species:obs,
+              names_from = measurement,
+              values_from = value)
+```
+
+Agora, as quatro variáveis de medição têm, cada uma, sua própria coluna novamente. Este conjunto de dados tem mais colunas e menos linhas do que o conjunto de dados `penguins_fake`.
+
+Vamos examinar cada argumento da função com mais detalhes.
+
+O argumento `id_cols` é o conjunto de colunas que identifica exclusivamente cada observação. Por padrão, serão todas as colunas que não estão nos argumentos `names_from` e` values_from`. Como `cols` da função` pivot_longer () `, você pode fazer uma lista de nomes de coluna ou usar funções auxiliares para selecionar colunas (veja a função `select ()`na folha de comando` dplyr` para mais detalhes ou procure por ` tidy-select` na guia Help).
+
+** !!CUIDADO!!: ** É fácil cometer um erro no argumento `id_cols`. Por exemplo, no código abaixo, esqueci de incluir `obs`. O resultado é algo estranho e inesperado com apenas 35 linhas.
+
+```{r}
+penguins_fake %>% 
+  pivot_wider(id_cols = species:year,
+              names_from = measurement,
+              values_from = value)
+```
+
+
+O argumento `names_from` é a variável (ou variáveis) que contém os valores que você deseja transformar em suas próprias colunas. Isso *não* está entre aspas.
+
+O argumento `values_from` é a variável (ou variáveis) que devem ser os valores das novas variáveis.
+
+### Video de Apresentação
+
+Agora que você aprendeu o básico sobre pivotar, assista ao vídeo abaixo que o guiará por alguns exemplos de codificação e baixe os arquivos R Markdown para acompanhar. Este é o mesmo arquivo que você usará para os outros tópicos.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/k3SZ8keibuQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### Resources
+
+* [Slides](https://speakerdeck.com/yutannihilation/a-graphical-introduction-to-tidyrs-pivot-star) from Hiroaki Yutani  
+* [R4DS Chapter 12.3](https://r4ds.had.co.nz/tidy-data.html)
+
+### Sua vez!
+
+#### Exercicio 1: `pivot_wider()`
+
+Resuma os dados `colheita_do_jardim` para encontrar o peso total da colheita em libras para cada vegetal e dia da semana. Exiba os resultados de forma que os vegetais sejam linhas, mas os dias da semana sejam colunas.
+
+#### Exercise 2: `pivot_longer()`
+
+Use o conjunto de dados `billboard` (procure na ajuda ou digite`? Billboard` no console). Tem classificações de músicas para cada semana que entraram no Top 100 da Billboard. As semanas são nomes de colunas. Use `pivot_longer ()` para transformar semanas em uma única coluna e remova linhas com valores ausentes para classificação (DICA: use o argumento `values_drop_na` em` pivot_longer () `).
+
+```{r}
+
+```
+
+
+## Joining datasets
+
+Ao analisar dados, é comum a necessidade de combinar conjuntos de dados relacionados. Os verbos `join` nos darão uma maneira de fazer isso. Para todas as junções, devemos estabelecer uma correspondência ou correspondência entre cada caso na tabela da esquerda e zero ou mais casos na tabela da direita.
+
+Uma correspondência entre um caso na tabela *left* e um caso na tabela *right* é feita com base nos valores em pares de variáveis correspondentes.
+
+* **Você** especifica quais pares usar.
+* Um par é uma variável da tabela da esquerda e uma variável da tabela da direita ou um conjunto de variáveis da tabela da esquerda e da direita.
+* Os casos devem ter valores *exatamente iguais* no par para que uma correspondência seja feita.
+
+Quando juntamos conjuntos de dados, o formato geral é
+
+```{r, eval=FALSE}
+left_dataset %>% 
+  <JOIN>(right_dataset, 
+         by=<HOW TO JOIN>)
+```
+onde `left_dataset` e` right_dataset` são datasets, `<JOIN>` é o tipo específico de junção, e `<HOW TO JOIN>` dá informações detalhadas sobre como fazê-lo.
+
+O argumento `by` informa como juntar os dois conjuntos de dados, especificamente com quais variáveis ele deve corresponder. Se as variáveis estiverem os mesmos nomes, só precisamos escrever o nome dessa variável, entre aspas: `by =" variable_name "`.
+
+Se as duas variáveis a serem correspondidas têm nomes diferentes nos dois conjuntos de dados, podemos escrever `by = c (" nome1 "=" nome2 ")`, onde `nome1` é a variável no conjunto de dados esquerdo a ser correspondido ao` nome2 `variável no conjunto de dados correto.
+
+Também podemos corresponder em várias variáveis usando `by = c (" nome1 "=" nome2 "," nome1a "=" nome2a ")`, onde os nomes à esquerda dos iguais são variáveis do conjunto de dados esquerdo e aqueles no à direita dos iguais são do conjunto de dados certo.
+
+Se `by =` for omitido de uma junção, então `R` realizará uma * junção natural *, que combina os dois conjuntos de dados por todas as variáveis que eles têm em comum. É uma boa prática sempre incluir `by =`.
+
+Vamos discutir os diferentes tipos de junções.
+
+### Mutating joins
+
+A primeira classe de junções são junções mutantes, que adicionam novas variáveis (colunas) à tabela de dados esquerda a partir de observações correspondentes na tabela direita.
+
+A principal diferença nas três opções de junção mutante nesta classe é como elas respondem às seguintes perguntas:
+
+1. O que acontece quando um caso na tabela da direita não tem correspondências na tabela da esquerda?
+2. O que acontece quando um caso na tabela da esquerda não tem correspondências na tabela da direita?
+
+Três funções de junção mutantes:
+
+** `left_join ()` **: a saída tem todos os casos da esquerda, independentemente se houver uma correspondência na direita, mas descarta quaisquer casos na direita que não tenham uma correspondência na esquerda. (Há também uma função ** `right_join ()` ** que faz o oposto.)
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/left-join.gif){width=300}
+
+**`inner_join()`**: the output has only the cases from the left with a match in the right.
+
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/inner-join.gif){width=300}
+
+**`full_join()`**:a saída tem todos os casos da esquerda e da direita. Isso é menos comum do que os dois primeiros operadores de associação.
+
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/full-join.gif){width=300}
+
+Quando há várias correspondências na tabela da direita para um caso específico na tabela da esquerda, todos os três desses operadores de junção mutante produzem um caso separado na nova tabela para cada uma das correspondências da direita.
+
+#### Examples
+
+Primeiro, crie dois pequenos conjuntos de dados:
+
+```{r}
+general_info <- tibble(
+  person_id = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+  age = c(34, 54, 67, 92, 21, 32, 18, 45, 34, 55),
+  rent_or_own = c("rent", "rent", "own", "rent", "rent", "own", "rent", "own", "own", "own")
+)
+
+general_info
+
+pet_info <- tibble(
+  person_id = c(2,3,5,7,8,10,11,12,13,14,15),
+  pet_owner = c("yes", "no", "no", "yes", "yes", "no", "no", "no", "yes", "no", "no")
+)
+
+pet_info
+```
+
+1. Comece com `general_info` e `left_join()` o `pet_info` by `person_id`:
+
+```{r}
+general_info %>% 
+  left_join(pet_info, 
+            by = "person_id")
+```
+
+A tabela resultante tem 10 linhas de dados - as 10 observações de `general_info`. Existem valores ausentes para `pet_owner` para` person_id` que estavam na tabela `general_info` e não na tabela` pet_info`.
+
+** ??? ** Como os resultados mudariam se `right_join ()` fosse usado no código acima em vez de `left_join ()`?
+
+2. Comece com `general_info` e` inner_join () `o` pet_info` por `person_id`:
+
+```{r}
+general_info %>% 
+  inner_join(pet_info, 
+             by = "person_id")
+```
+
+A tabela resultante tem apenas 6 linhas com as observações que estão em `general_info` e` pet_info`.
+
+3. Comece com `general_info` e` full_join () `o` pet_info` por `person_id`:
+
+```{r}
+general_info %>% 
+  full_join(pet_info, 
+            by = "person_id")
+```
+
+A tabela resultante possui 15 linhas. Estão faltando valores para `pet_owner` para` person_id` que estavam na tabela `general_info` e não na tabela` pet_info`, e estão faltando valores para `idade` e` aluguel` para `person_id` que estavam na tabela `pet_info` e não na tabela` general_info`.
+
+### Filtering joins
+
+A segunda classe de junções são junções de filtragem, que selecionam casos específicos da tabela da esquerda com base em se eles correspondem a uma observação na tabela da direita.
+
+** `semi_join ()` **: descarta quaisquer casos na tabela da esquerda que não tenham uma correspondência na tabela da direita. Se houver várias correspondências de casos da direita para um caso da esquerda, ele mantém apenas uma cópia do caso da esquerda.
+
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/semi-join.gif){width=300}
+
+**`anti_join()`**: descarta quaisquer casos na tabela da esquerda que tenham uma correspondência na tabela da direita.
+
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/anti-join.gif){width=300}
+
+#### Examplo
+
+Eles usam os dados de exemplo da seção anterior
+
+Um `semi_join ()` é usado para encontrar a idade e o status do aluguel (informações na tabela `general_info`) para os proprietários de animais de estimação:
+
+```{r}
+general_info %>% 
+  semi_join(pet_info %>% filter(pet_owner == "yes"), 
+            by = "person_id") 
+```
+
+Isso retorna uma tabela com 3 linhas. Uma vez que são mesas pequenas, você deve verificar isso manualmente. Observe também que não pressionei enter após `%>%` dentro de `semi_join ()`. Este é um caso em que o deixamos na mesma linha para torná-lo mais legível.
+
+Use um `anti_join ()` para encontrar a idade e o status do aluguel (informações na tabela `general_info`) para pessoas que não são donos confirmados de animais de estimação (observe que isso inclui desconhecidos):
+
+```{r}
+general_info %>% 
+  anti_join(pet_info %>% filter(pet_owner == "yes"),
+            by = "person_id")
+```
+
+### Demo video
+
+Agora assista ao vídeo abaixo que irá guiá-lo por alguns exemplos de codificação mais avançados (além de uma participação especial de minha filha, Hadley). Os arquivos R Markdown para download para acompanhar são encontrados abaixo do vídeo pivotante.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MJDHRtwZhoM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Recursos
+
+* [Animated GIFs](https://github.com/gadenbuie/tidyexplain)  
+* [R4DS Chapter 13](https://r4ds.had.co.nz/relational-data.html)  
+* [Join Cheatsheet](https://stat545.com/join-cheatsheet.html) by Jenny Bryan
+
+
+### Sua vez!
+
+#### Exercise 1: mutating join
+
+#### Exercício 1: mutação de junção
+
+Resuma os dados `garden_harvest` para encontrar a colheita total em libras para cada variedade de vegetais e, em seguida, tente adicionar a parcela da tabela` garden_planting`. Isso não sairá perfeitamente. Qual é o problema? Como você pode consertar isso?
+
+```{r}
+
+```
+#### Exercício 2: mutação de junção
+
+Gostaria de saber quanto dinheiro "economizei" com a jardinagem, para cada tipo de vegetal. Descreva como eu poderia usar os conjuntos de dados `garden_harvest` e` garden_spending`, junto com dados de algum lugar como [este] (https://products.wholefoodsmarket.com/search?sort=relevance&store=10542) para responder a esta pergunta. Você pode responder isso em palavras, referenciando várias funções de junção. Você não precisa do código R, mas pode fornecer algum se for útil.
+
+#### Exercício 3: junção de filtragem
+
+Exclua as variedades de vegetais de `colheita_do_jardim` que estão nas parcelas M e H.
+
+```{r}
+
+```

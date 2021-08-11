@@ -1,5 +1,5 @@
 ---
-title: "Exercicio Pivoting"
+title: "Exercicio Pivoting - com respostas"
 subtitle: "Conteúdo adaptado do livro 'R for Data Science'"
 author: "Claudiano Cruz Neto"
 date: "28/07/2021"
@@ -38,7 +38,7 @@ Existem três regras inter-relacionadas que tornam um conjunto de dados organiza
 - Cada valor deve ter sua própria célula.
 
 A Figura 12.1 mostra as regras visualmente.
-![As trÊs regras que fazem um banco de dados ser tidy](figs/tidy.png) 
+![As três regras que fazem um banco de dados ser tidy](figs/tidy.png) 
 
 Essas três regras estão inter-relacionadas porque é impossível satisfazer apenas duas das três. Essa inter-relação leva a um conjunto ainda mais simples de instruções práticas:
 
@@ -91,15 +91,102 @@ Na próxima sessão você mesmo tentará fazer um pouco dessas operações.
 
 1. Usando a prosa, descreva como as variáveis e observações são organizadas em cada uma das tabelas de amostra.
 
+- Na tabela table1, cada linha representa uma combinação (`country`, `year`). As colunas `cases` e `population` contêm os valores dessas variáveis.
+
+- Na tabela 2, cada linha representa uma combinação (`country`, `year`, `variable`). A `count` de colunas contém os valores dos casos de variáveis e população em linhas separadas.
+
+- Na tabela 3, cada linha representa uma combinação (`country`, `year`). A coluna `rate` fornece os valores de casos e população em uma string formatada como casos / população.
+
 2. Calcule a taxa para table2 e table4a + table4b. Você precisará realizar quatro operações:
 
-+ Extraia o número de casos de TB por país por ano.
-+ Extraia a população correspondente por país por ano.
-+ Divida os casos pela população e multiplique por 10.000.
-+ Guarde em local apropriado.
-+ Qual representação é mais fácil de trabalhar? Qual é o mais difícil? Por quê?
+2.1 Extraia o número de casos de TB por país por ano.
 
-3. Se você quiser se desafiar um pouco mais, tente recriar o gráfico mostrando a mudança nos casos ao longo do tempo usando a table2 em vez da tabl21. O que você precisa fazer primeiro?
+Para calcular os casos por pessoa, precisamos dividir os casos pela população para cada país e ano. Isso é mais fácil se os casos e as variáveis de população forem duas colunas em um quadro de dados em que as linhas representam combinações (país, ano).
+
+*Passo 1 - crie tabelas em separado para "cases" e "population" e garanta que elas estão organizadas na mesma ordem, via "arrange".*
+```{r}
+t2_cases <- filter(table2, type == "cases") %>%
+  rename(cases = count) %>%
+  arrange(country, year)
+
+t2_population <- filter(table2, type == "population") %>%
+  rename(population = count) %>%
+  arrange(country, year)
+```
+
+
+2.2 Extraia a população correspondente por país por ano.
+2.3 Divida os casos pela população e multiplique por 10.000.
+
+*Passo 2 - agora crie um novo dataframe com colunas - população e casos, e calcule o numero de casos per capita em uma nova coluna*.
+
+```{r}
+t2_cases_per_cap <- tibble(
+  year = t2_cases$year,
+  country = t2_cases$country,
+  cases = t2_cases$cases,
+  population = t2_population$population) %>%
+  mutate(cases_per_cap = (cases / population) * 10000) %>%
+  select(country, year, cases_per_cap)
+```
+
+
+2.4 Guarde em local apropriado. # errado
+*Passo 3 - Salve a nova variavel no local apropriado - também adicionaremos novas linhas a tabela `table2`*.
+
+```{r}
+t2_cases_per_cap <- t2_cases_per_cap %>%
+  mutate(type = "cases_per_cap") %>%
+  rename(count = cases_per_cap)
+```
+
+
+2.5 Qual representação é mais fácil de trabalhar? Qual é o mais difícil? Por quê?
+
+Primeiro vamos ver cada tabela.
+
+```{r}
+table2
+```
+
+```{r}
+t2_cases_per_cap
+```
+
+```{r}
+bind_rows(table2, t2_cases_per_cap) %>%
+  arrange(country, year, type, count)
+```
+
+*Para table4a e table4b, crie uma nova tabela para casos per capita, que chamaremos de table4c, com linhas de país e colunas de ano*.
+
+```{r}
+table4c <-
+  tibble(
+    country = table4a$country,
+    `1999` = table4a[["1999"]] / table4b[["1999"]] * 10000,
+    `2000` = table4a[["2000"]] / table4b[["2000"]] * 10000
+  )
+table4c
+```
+
+Conclusão: Nenhuma das tabelas é particularmente fácil de trabalhar. Como a tabela2 tem linhas separadas para casos e população, precisamos gerar uma tabela com colunas para casos e população onde poderíamos calcular os casos per capita. a tabela4a e a tabela4b dividem os casos e as variáveis de população em diferentes tabelas, o que torna fácil dividir os casos por população. No entanto, tivemos que repetir esse cálculo para cada linha.
+
+O formato ideal de um quadro de dados para responder a essa pergunta é aquele com as colunas país, ano, casos e população. Então, o problema poderia ser respondido com uma única chamada `mutate()`.
+
+
+3. Se você quiser se desafiar um pouco mais, tente recriar o gráfico mostrando a mudança nos casos ao longo do tempo usando a `table2` em vez da `table1`. O que você precisa fazer primeiro?
+
+```{r}
+table2 %>%
+  filter(type == "cases") %>%
+  ggplot(aes(year, count)) +
+  geom_line(aes(group = country), colour = "grey50") +
+  geom_point(aes(colour = country)) +
+  scale_x_continuous(breaks = unique(table2$year)) +
+  ylab("cases")
+```
+
 
 # Pivoting
 
@@ -211,19 +298,47 @@ Como você deve ter adivinhado por seus nomes, _pivot_wider()_ e _pivot_longer()
 1. Crie uma tibble de nome "dataset" com os objetos abaixo:
 ```{r}
 nome = c("Joao Silva","Joao Silva", "Jessica Cordero", "Jessica Cordero")  
-
 dados = c("idade", "altura", "idade", "altura")
 
 valores = c(45, 186, 37, 156)
 ```
 
+```{r}
+# Resposta
+dataset <- as_tibble(list(
+  nome = c("Lorena Almeida","Tania Almeida", "Cleise Almeida", "Clesia Almeida"), 
+  dados = c("idade", "altura", "idade", "altura"), 
+  valores = c(45, 186, 37, 156) ))
+```
+
+
 2. O objeto "dataset" deve ser manipulado usando qual função: _pivot_longer()_ ou _pivot_wider()_? Demonstre.
 
+```{r}
+# Devemos usar a função `pivot_wider`
+  dataset %>% 
+    pivot_wider(names_from = dados, values_from = valores)
+```
+
+
 3. Carregue os dados do objeto _table3_. Você precisa analisar esses dados por ano, e deseja que suas variaveis sejam os paises. Para executar isso qual das funções de pivotagem você deve utilizar? Mostre no código. 
+
+```{r}
+table3
+```
+
+```{r}
+table3 %>% 
+    group_by(rate, country) %>% 
+    summarise(year) %>% 
+    pivot_wider(names_from = country, values_from = year)
+```
+
 
 4. *Questão diferenciada*. Quem acertar, ou pelo menos tentar, ganha muitos pontos comigo: 
 
 Queremos transformar o objeto _table3_ num formato *wider*, em que queremos que os *anos* sejam as colunas.  No entanto, essa base tem uma coluna chamada _rate_, que significa o número de casos dividido pela população. Note que há um "/" parenteses separando os dois valores, _cases/pop_. Antes de transformar a tabela no formato wider como desejamos, convém separarmos esses dois valores da coluna _rate_. Para fazer isso você deve:
+
 
 - Passo 1: chamar a *table3* e usar a função *separate()*
 ```{r}
@@ -236,3 +351,10 @@ Queremos transformar o objeto _table3_ num formato *wider*, em que queremos que 
 - Passo 3: Se você fez os dois primeiros passos corretamente, então o novo banco de dados terá varios _NA_. Vamos assumir que _NA_ = _0_, portanto preencha-os com zero. *Dica:* _Para preencher com zero, use "values_fill"_
 
 
+```{r}
+# Resposta
+table3 %>% 
+    separate(col = rate, into = c("cases", "population"),
+    sep = "/") %>% 
+    pivot_wider(names_from = year, values_from = country)
+```

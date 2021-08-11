@@ -1,0 +1,216 @@
+---
+title: "Aula 5 - Analise e Tratamento de um banco de dados"
+subtitle: "Esta aula é baseada no material postado no [Rpubs](https://rpubs.com/belisards/tutorial-corona)"
+author: "Claudiano Cruz Neto"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    code_download: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pacotes utilizados
+
+```{r message=FALSE, warning=FALSE}
+# Pacotes
+library(tidyverse)
+```
+
+# Importando os Dados 
+
+Nessa etapa iremos relembrar algumas funções úteis para trabalhar com dados importados de outras fontes. Para isso, usaremos os dados de COVID-19 oriúndos do repositório da [Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19). 
+
+```{r}
+# url que usaremos para baixar os dados
+url <- 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
+
+# Importando o arquivo csv
+dados <- read.csv(url)
+```
+
+Depois de baixarmos os dados, precisamos entender sua estrutura. Para isso vamos usar algumas funções específicas para essa finalidade.
+
+```{r}
+dados %>% head()
+```
+
+Observe que podemos acessar os dados acima e ver sua estrutura. Note que o dataset `dados` possue `r nrow(dados)` linhas e `r ncol(dados)` colunas. Para acessar esses valores, usamos as funções `nrow()` e `ncol()`, respectivamente. Teste você também! 
+
+```{r}
+# teste as funções ditas acima:
+
+```
+
+Ao navegar pela tabela observamos as seguintes colunas:
+
+- *Province.State* (província, por exemplo, Guiana Francesa)
+- *Country.Region* (país, por exemplo, França)
+- *Lat* (latitude)
+- *Long* (longitude)
+- *Datas* (são várias colunas representando diferentes datas)
+
+Devemos observar logo de imediato que as colunas com a grafia *"X1.16.21"* registram uma série histórica de cada país. Cada dia é uma coluna.
+
+# Precisamos mudar o formato de colunas em linhas
+
+Para facilitar a análise e visualização dos nossos dados, precisamos criar uma variável (ou uma nova coluna) que contenha o dia e outra com o número de casos. Isso permitirá que possamos resumir as várias colunas, em apenas *duas*. Adotaremos portanto o formato dado pela função `pivot_long()`. 
+
+```{r}
+dados2 <- dados %>% 
+  filter(Country.Region %in% c("Brazil", "Argentina", "Chile", "US")) %>% # podemos retirar esse filtro.
+  pivot_longer(cols = starts_with("X"), names_to = "dia", values_to = "n_casos") %>% 
+  as_tibble()
+
+```
+
+Vejamos apenas que estamos usando também uma função chamada `starts_with()` dentro do argumento `cols` porque percebemos um padrão nos nomes das colunas que desejamos alterar. Você notou esse padrão?
+
+Agora vejamos como os dados estão:
+```{r}
+str(dados2)
+```
+
+Ou podemos usar: 
+
+```{r}
+glimpse(dados2)
+```
+
+# Verificando `NAs`
+
+Dados ausentes - NAs ou valores não-disponíveis - representam muitas dificuldades para os métodos de análise. Encontrar dados ausentes é tão importante que existem no R funções projetadas especificamente para encontrá-los. A função `is.na()` é otimizada para pesquisar grandes conjuntos de dados e encontra rapidamente valores ausentes. 
+
+Se buscamos saber em quais colunas estão os dados faltantes, vejamos a função `table()` pode ser utilizada inicialmente para verificar a quantidade total de NAs em seus dados. 
+
+```{r}
+table(is.na(dados2)) # verifica a presença ou não de NAs
+```
+
+E `colSums()` permite verificar todo o data frame de modo vetorizado.
+```{r}
+colSums(is.na(dados2))
+```
+Felizmente não temos dados faltantes na nossa tabela, e isso pode ser inferido a partir dos valores nulos nas colunas destacadas acima.
+
+
+# Precisamos transformar texto em datas - strings to date
+
+Ao olhar para o dataset você consegue realmente entender o que a coluna `dia` representa? Infelizmente o formato dos dados não está muito claro, mas sabemos que a primeira parte representa `mês` antecedido da letra *X*, depois `dia` e depois `ano`, esse ultimo com apenas 2 dígitos. 
+
+Entendo que o primeiro passo aqui seja definir que o campo `dia` seja declarado como uma `date`. No momento vamos retirar a letra *“X”*, e depois formatar a coluna como data.
+
+Usamos uma função para substituir (replace) uma sequência de caracteres (string ou str),  `str_replace()`. Com ela, vamos trocar no campo “dia” do banco de dados “dados2” qualquer ocorrência de *X* por uma sequência vazia. *O que isso significa dizer?*
+
+```{r}
+# dados2 %>% 
+#   mutate(dia = str_replace(dia, "X", "")) %>%
+#   lubridate::as_date(dados2$dia, format = "%m.%d.%y")
+
+# jeito r Base
+dados2$dia <- str_replace(dados2$dia,"X", "") %>%
+  as.Date(format='%m.%d.%y')
+
+```
+
+Depois de substituidos os "X"s, mudamos a coluna `dia` para o formato de data com a função `as.Date()`. Note que, adotamos data que é mês (%m), dia (%d) e ano (%y).
+
+# Identificando o dia zero x Número de casos 
+
+Em análise de dados de epidemias é muito interessante usarmos métricas adequadas. Uma dessas métricas é a contagem de quantos dias se passaram desde determinado limiar de casos. Essa métrica facilita a comparação do mesmo fenômeno que vem ocorrendo em diferentes datas. 
+
+Para isso, optamos por adicionar uma nova variável ao nosso banco de dados, `dia0`. Esta variável é resultado do número de casos no “dia zero” de cada país.
+
+```{r}
+dados3 <- dados2 %>% 
+  arrange(dia) %>% # Ordenando os dados por por dia
+  filter(n_casos > 0)  %>%
+  group_by(Country.Region) %>% # Agrupando para cada país
+  mutate(dia0 = min(dia))  # VDefinindo o dia 0 como o menor dia do país em questão 
+```
+
+```{r}
+dados3
+```
+
+Agora que temos a variável `dia0` - a data de registro do primeiro caso de coronavirus podemos calcular a como a pandemia está avançando dia a dia, e consequentemente poderemos medir sua velocidade. Em outras palavras, podemos analisar como cada país estava uma semana em relação ao limiar do centésimo caso, por exemplo.
+
+Vamos criar uma nova variável `conta_dia` que vai ser o resultado da diferença entre a data de registro `dia` e o dia 0 `dia0` em dias.
+```{r}
+dados4 <- dados3 %>% 
+  mutate(conta_dia = difftime(dia, dia0, units = "days"))
+
+
+# E visualizar os dados ordernados por ele
+dados4 %>% arrange(conta_dia) 
+```
+
+
+# Métricas adicionais: Casos novos por dia e aumento percentual
+
+Repare que a coluna `n_casos` traz o total de casos acumulado até a data especificada no campo `dia`. Mas suponha que desejemos conhecer o número de novos casos por dia?
+
+Vamos criar uma nova coluna chamada `novos_casos`, que será resultado do número de casos do dia menos o número de casos do dia anterior, em cada país.
+
+```{r}
+dados5 <- dados4 %>% 
+       group_by(Country.Region) %>% 
+arrange(dia) %>% # ordenados por dia
+mutate(novos_casos = n_casos - lag(n_casos)) # lag() dá o último valor da col
+```
+
+Também vamos adicionar novos campos para mostrar o aumento percentual no número acumulado de casos confirmados diariamente a média móvel de novos casos nos últimos 7 dias.
+
+Para calcular o aumento percentual, tomamos o número de novos casos e dividimos pelo total do dia anterior `lag(n_casos)`, e multiplicamos por 100 para obter a taxa percentual - note ainda, que usamos a função `round()` para imprimir os valores à esquerda da virgula - ou seja, arredondamos os valores.
+
+```{r}
+dados6 <- dados5 %>%   
+mutate(var_casos = round((novos_casos/lag(n_casos)*100))) %>% # cal variação
+mutate(var_casos = paste(var_casos, "%", sep = " ")) # inserindo %
+
+```
+
+# Você se lembra da famosa *Média Móvel simples*?
+
+Essa métrica nos ajuda a enxegarmos as tendências de série temporais, pois ela  “suaviza” as possiveis oscilações diárias. Para realizar essa operação precisamos adicionar um novo campo, que servirá para incluí-la. Para isso usaremos a função que irá somar os registros de novos casos nos últimos 7 dias para cada país e fazer um média.
+
+
+```{r}
+dados7 <- dados6 %>% 
+  mutate(med_movel_7 = round(zoo::rollmeanr(novos_casos, 7, fill = NA)))
+```
+
+
+# Casos por milhão de habitantes: o que devemos fazer?
+
+Gostariamos de saber qual o número de casos de covid por milhão de habitantes de cada país. O que podemos fazer para resolver isso? *Tente resolver essa demanda!*
+
+
+```{r}
+dados7 %>% 
+  # filter(Country.Region %in% c("Argentina"))  %>% 
+  group_by(conta_dia) %>%
+  ggplot() + aes(x = dia , y = med_movel_7) + 
+  geom_line() +
+  theme_bw() 
+
+p <- dados7 %>% 
+  filter(Country.Region %in% c("US", "Brazil", "Chile")) %>% 
+  group_by(conta_dia)
+
+  p  %>%  
+  ggplot(aes(x = dia, y = med_movel_7)) + 
+  geom_line(aes(color = Country.Region)) +
+  scale_color_manual(values = c("darkblue", "green", "red")) +
+  scale_x_date(breaks = "3 month", date_labels = "%b %Y") +
+  #geom_smooth(aes(y = novos_casos), colour="#CC0000") +
+  theme_bw() +
+  labs(y = "", x = "", title = "Média móvel de novos casos reportados de Covid-19") 
+```
+

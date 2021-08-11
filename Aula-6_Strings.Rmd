@@ -1,0 +1,283 @@
+---
+title: "Trabalhando com Strings"
+subtitle: "Aula preparada a partir do cap 14 do livro 'R for Data Science"
+author: "Claudiano Cruz Neto"
+date: "`r Sys.Date()`"
+output: html_document
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# O que veremos aqui?
+
+Este capítulo apresenta a manipulação de strings em R. Você aprenderá o básico de como as strings funcionam e como criá-las manualmente, mas o foco deste capítulo [ver aqui](https://r4ds.had.co.nz/strings.html) será em expressões regulares, ou regexps, para abreviar. Expressões regulares são úteis porque strings geralmente contêm dados não estruturados ou semiestruturados, e regexps são uma linguagem concisa para descrever padrões em strings. 
+
+Quando você olhar pela primeira vez para uma regexp, você pensará que um gato passou por cima do seu teclado, mas à medida que sua compreensão melhora, eles logo começarão a fazer sentido.
+
+Este capítulo se concentrará no pacote `stringr` para manipulação de strings, que faz parte do `tidyverse` central.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+## O básico de Strings
+
+Você pode criar strings com aspas simples ou duplas. Recomenda-se sempre usar ", a menos que você queira criar uma string que contenha vários ".
+
+```{r}
+string1 <- "Isto é uma string"
+string2 <- 'Se voce quiser incluir uma "citação" dentro de uma string, use aspas simples'
+```
+
+Se você esquecer de fechar uma citação, verá *+*, o caractere de continuação.
+
+Para incluir uma aspa literal simples ou dupla em uma string, você pode usar ``\`` para "escapar" dela:
+
+```{r}
+double_quote <- "\"" # or '"'
+single_quote <- '\'' # or "'"
+```
+
+Isso significa que se você quiser incluir uma barra invertida literal, será necessário dobrá-la: ``"\\"``.
+
+Esteja ciente de que a representação impressa de uma string não é a mesma que a própria string, porque a representação impressa mostra os escapes. Para ver o conteúdo bruto da string, use writeLines():
+
+```{r}
+x <- c("\"", "\\")
+x
+```
+
+
+```{r}
+writeLines(x)
+```
+
+Existem vários outros personagens especiais. Os mais comuns são `"\n"`, nova linha e `"\t"`, tab (significa guia). Às vezes, você também verá strings como `"\u00b5"`, esta é uma maneira de escrever caracteres não ingleses que funciona em todas as plataformas:
+
+```{r}
+x <- "\u00b5"
+x
+```
+
+Muitas strings são freqüentemente armazenadas em um vetor de caracteres, que você pode criar com c():
+
+```{r}
+c("one", "two", "three")
+```
+
+
+## Comprimento de Strings
+
+A Base R contém muitas funções para trabalhar com strings, mas vamos evitá-las porque podem ser inconsistentes, o que as torna difíceis de lembrar. Em vez disso, usaremos funções de `stringr`. Eles têm nomes mais intuitivos e todos começam com `str_`. Por exemplo, `str_length()` informa o número de caracteres em uma string:
+
+```{r}
+str_length(c("a", "R for data science", "teste", NA))
+```
+
+O prefixo `str_` por repetir sempre é particularmente útil para nós que usamos o RStudio, porque ao digitar `str_` ele acionará o preenchimento automático, permitindo que você veja todas as funções de `stringr`.
+
+## Combinando Strings
+
+Para isso usamos, `str_c`:
+
+```{r}
+str_c("x", "y")
+```
+
+```{r}
+str_c("x", "y", "z")
+```
+
+Usar o argumento `sep` permite controlar como a separação deve ser feita:
+
+```{r}
+str_c("x", "y", sep = ", ")
+```
+
+Note que escrever `str_c("x", "y", sep = ", ")`vai gerar um resultado diferente que se usarmos `str_c("x", "y", sep = ",")`.
+
+```{r}
+str_c("x", "y", sep = ",") # mudou o espaçamento
+```
+
+Como a maioria das outras funções em R, os valores ausentes são contagiosos. Se você quiser que eles imprimam como "NA", use `str_replace_na()`:
+
+```{r}
+x <- c("abc", NA)
+str_c("(", x, ")")
+```
+
+```{r}
+str_c("(", str_replace_na(x), ")")
+```
+Como mostrado acima, `str_c()` é vetorizado e automaticamente recicla vetores mais curtos para o mesmo comprimento que os mais longos:
+
+```{r}
+str_c("prefix-", c("a", "b", "c"), "-suffix")
+```
+
+Para recolher um vetor de strings em uma única string, use `collapse`:
+
+```{r}
+str_c(c("x", "y", "z"), collapse = ", ")
+```
+
+## Subconjunto de Strings
+
+Você pode extrair partes de uma string usando `str_sub()`. Assim como a string, `str_sub()` leva os argumentos `start` e `end` que fornecem a posição (inclusiva) da substring:
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 1)
+```
+Números negativos contam do final para o início (de trás para frente):
+
+```{r}
+# negative numbers count backwards from end
+str_sub(x, -3, -1)
+```
+
+Observe que `str_sub()` não falhará se a string for muito curta: ela apenas retornará o máximo possível:
+
+```{r}
+str_sub("a", 1, 5)
+
+```
+
+Você também pode usar a forma de atribuição de `str_sub()` para modificar strings:
+
+```{r}
+str_sub(x, 1, 1) <- str_to_lower(str_sub(x, 1, 1))
+x
+```
+
+## Locales
+
+Acima eu usei `str_to_lower()` para mudar o texto para minúsculas. Você também pode usar `str_to_upper()` ou `str_to_title()`. No entanto, a mudança de maiúsculas e minúsculas é mais complicado do que pode parecer à primeira vista, porque idiomas diferentes têm regras diferentes para a mudança de maiúsculas e minúsculas. Você pode escolher qual conjunto de regras usar especificando um local:
+
+```{r}
+# Turco tem dois i's: com e sem ponto, e
+# tem uma regra diferente para colocá-los em letras maiúsculas:
+str_to_upper (c ("i", "ı"))
+
+str_to_upper (c ("i", "ı"), locale = "tr")
+```
+
+O local é especificado como um código de idioma ISO 639, que é uma abreviatura de duas ou três letras. Se você ainda não conhece o código do seu idioma, a Wikipedia tem uma boa lista. Se você deixar o local em branco, ele usará o local atual, conforme fornecido pelo seu sistema operacional.
+
+Outra operação importante que é afetada pela localidade é a classificação. As funções de base R `order()` e `sort()` classificam as strings usando o local atual. Se você deseja um comportamento robusto em diferentes computadores, pode usar `str_sort()` e `str_order()`, que usam um argumento de localidade adicional:
+
+```
+x <- c("apple", "eggplant", "banana")
+
+str_sort(x, locale = "en")  # English
+#> [1] "apple"    "banana"   "eggplant"
+
+str_sort(x, locale = "haw") # Hawaiian
+#> [1] "apple"    "eggplant" "banana"
+
+```
+
+## Exercicios
+
+1. Em código que não usa stringr, você geralmente verá paste () e `paste0()`. Qual é a diferença entre as duas funções? A que função stringr eles são equivalentes? Como as funções diferem no modo como lidam com `NA`?
+
+2. Em suas próprias palavras, descreva a diferença entre os argumentos `sep` e `collapse` para `str_c()`.
+
+3. Use `str_length()` e `str_sub()` para extrair o caractere do meio de uma string. O que você fará se a string tiver um número par de caracteres?
+
+4. O que `str_wrap()` faz? Quando você pode querer usá-lo?
+
+5. O que `str_trim()` faz? Qual é o oposto de `str_trim()`?
+
+6. Escreva uma função que transforma (por exemplo) um vetor `c ("a", "b", "c")` na string `a, b e c`. Pense cuidadosamente sobre o que ele deve fazer se for dado um vetor de comprimento 0, 1 ou 2.
+
+# Expressões Regulares - Regex
+
+Os padrões mais simples correspondem a strings exatas:
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "an")
+```
+apple
+b`an`ana
+pear.
+
+O próximo passo na complexidade é `.`, Que corresponde a qualquer caractere (exceto uma nova linha):
+
+```{r}
+str_view(x, ".a.")
+```
+
+apple
+`ban`ana
+p`ear`.
+
+Mas se `"."`corresponde a qualquer caractere, como você combina o caractere `“.”`? Você precisa usar um “escape” para dizer à expressão regular que você deseja corresponder exatamente, não usar seu comportamento especial. 
+
+Como strings, regexps usam a barra invertida, `\`, para escapar de um comportamento especial. Portanto, para corresponder a um `.`, Você precisa do regexp `\.`. Infelizmente, isso cria um problema. Usamos strings para representar expressões regulares e `\` também é usado como um símbolo de escape em strings. Portanto, para criar a expressão regular `\.` precisamos da string `"\\."`.
+
+```{r}
+# Para criar a expressão regular, precisamos \\
+dot <- "\\."
+
+# Mas a própria expressão contém apenas um:
+writeLines(dot)
+#> \.
+
+# E isso diz a R para procurar um explícito.
+str_view(c ("abc", "a.c", "bef"), "a\\.c")
+```
+
+abc
+`a.c`
+bef
+
+Se `\` é usado como um caractere de escape em expressões regulares, como você corresponde a um `\` literal? Bem, você precisa escapar dele, criando a expressão regular `\\`. Para criar essa expressão regular, você precisa usar uma string, que também precisa escapar `\`. Isso significa que para corresponder a um literal `\` você precisa escrever `"\\\\"` - você precisa de quatro barras invertidas para corresponder a uma!
+
+```{r}
+x <- "a\\b"
+writeLines(x)
+#> a\b
+
+str_view(x, "\\\\")
+```
+
+Vamos convencionar usar uma expressão regular como `\`. e strings que representam a expressão regular como `"\\."`.
+
+## Âncoras
+
+Por padrão, as expressões regulares corresponderão a qualquer parte de uma string. Muitas vezes é útil ancorar a expressão regular para que corresponda desde o início ou final da string. Você pode usar:
+
+* `^` para corresponder ao início da string.
+* `$` para corresponder com o final da string.
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "^a")
+```
+
+```{r}
+str_view(x, "a$")
+```
+
+Para lembrar qual é qual, experimente isto: se você começa com poder/potência (`^`), acaba com dinheiro (`$`).
+
+Para forçar uma expressão regular a corresponder apenas a uma string completa, ancore-a com `^` e `$`:
+
+```{r}
+x <- c("apple pie", "apple", "apple cake")
+str_view(x, "apple")
+```
+
+Mas se você usar: 
+
+```{r}
+str_view(x, "^apple$")
+```
+
+Você também pode combinar o limite entre as palavras com `\b`. Não costumo usar isso no R, mas às vezes vou usá-lo quando estou fazendo uma pesquisa no RStudio quando quero encontrar o nome de uma função que é um componente de outras funções. Por exemplo, vou procurar `\bsum\b` para evitar a correspondência de `summarise`, `summary`, `rowsum` e assim por diante.
