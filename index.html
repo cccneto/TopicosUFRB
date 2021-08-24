@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introdução a Programação com R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Claudiano Neto, Dr." />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Introdução a Programação com R
+## Tópicos Especiais em Meio Ambiente I
+### Claudiano Neto, Dr.
+### Universidade Federal do Recôncavo da Bahia <br> Cruz das Almas, BA, BRA
+### Junho, 28, 2021
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+.tiny .remark-code { /*Change made here*/
+    font-size: 60% !important;
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+class: left, middle
+
+# Agradecimentos
+
+- Esses slides são fortemente baseados no trabalho da Dra. Silvia Canelón ([@spcanelon](https://twitter.com/spcanelon)),  "[Tour of the Tidyverse](https://github.com/spcanelon/tour-of-the-tidyverse)", bem como nos slides da Dra. Sara Mortara e da Dra. Andrea Sánchez-Tapia ([Instituto Hub](https://github.com/liibre/instituto_hub)). 
+
+- Para isso usei [xaringan](https://github.com/yihui/xaringan) 📦 do Dr. Yihui Xie e [xaringanExtra](https://github.com/gadenbuie/xaringanExtra) 📦 do Garrick Aden-Buie, e adaptado do [R-Ladies `xaringan` theme designed by Alison Hill](https://alison.rbind.io/post/2017-12-18-r-ladies-presentation-ninja/)
+
+- Utilizaremos várias referências, todas disponíveis nesse link [GitHub](https://github.com/cccneto/Topicos_UFRB)
+
+
+
+---
+
+## apresentação
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 150px;
+height: 128px;
+z-index: 0;
+background-image: url(./figs/ufrb.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:1em;right:1em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+
+- __Claudiano Carneiro da Cruz Neto__ Economista (UESC), MSc. Desenvolvimento Regional e Meio Ambiente  (UESC), Dr. em Economia (UNB). Sou usuário do R desde 2018, e me considero apaixonado por essa linguagem de programação. Amo trabalhar estudando a interface entre Economia e Meio Ambiente, por isso a maioria dos meus trabalhos está direcionado para essa linha de pesquisa.
+
+- [Website](https://cneto.netlify.app/), [Twitter](https://twitter.com/ClaudianoNeto), [Github](https://github.com/cccneto)  
+
+--
+
+- __Grupo de Estudos em Economia e Meio Ambiente__
+[Se quiser saber mais, clique aqui](http://dgp.cnpq.br/dgp/espelhogrupo/582306)
+--
+
+---
+
+## sobre nosso curso
+
+### Ambientação ao R e ao RStudio &lt;br&gt;
+- Vantagens de usarmos programação para analisar dados
+- O que é e por que usar o RStudio
+- Escrevendo e rodando códigos
+
+### Introdução à programação em R
+
+- Objetos e vetores
+- Classes: números, caracteres, lógicos e data frames
+- Operadores de seleção; utilizar e criar funções no R
+- Operadores lógicos e aritméticos
+- Loopings de programação: for e while
+- O operador pipe (%&gt;%)
+
+
+
+
+---
+
+## sobre nosso curso - continuação
+
+### Programação no dia a dia
+- Exemplos de scripts reais
+- Usando e instalando pacotes
+- Estruturação de projetos
+- Boas práticas de programação em R
+
+### Importação de bases para dentro do R
+- Importando arquivos de texto: .csv e .txt
+- Importando arquivos excel: .xls e .xlsx
+
+---
+
+## sobre nosso curso - continuação
+
+### Manipulação de bases de dados (o pacote tidyverse)
+- Selecionando colunas
+- Filtrando e ordenando linhas
+- Modificando e criando colunas
+- Criando sumarizações
+- Juntando duas bases
+
+### Gráficos (o pacote ggplot2)
+- Gráficos de pontos (dispersão)
+- Gráficos de barras
+- Boxplots e histogramas
+- Customizando gráficos
+
+---
+
+
+## sobre nosso curso - continuação
+
+### Construindo artigos e relatórios em R Markdown
+- Introdução ao R Markdown
+- Construindo relatórios em HTML, PDF e Word
+
+---
+
+## sobre hoje
+
+1. conhecendo a linguagem R e fluxo de trabalho
+
+2. introdução ao R
+
+3. manipulação de dados
+
+4. criando figuras básicas
+
+---
+
+## códigos de apoio
+
+todos os códigos diponíveis em: 
+
+
+[um bestiário de funções úteis](https://hackmd.io/@andreasancheztapia/bestiario_HUB)
+
+---
+## antes de começar
+
++ procure a janela de chat do zoom, e não hesite em fazer perguntas
+
+--
+
++ tem um botão verde para contar se tudo está certo. Periodicamente vamos perguntar se todo mundo está acompanhando, por favor use este botão ou responda no chat
+
+--
+
++ pode abrir sua câmera :) procure manter seu microfone silenciado. 
+
+---
+class: inverse, middle, center
+
+# 1. conhecendo a linguagem R e fluxo de trabalho
+
+
+---
+## por que R?
+
+- linguagem de __código aberto__, __livre__ &amp; __sem custo__: um dos pilares da ciência aberta
+
+--
+
+- __baseada em scripts__: essencial para reprodutibilidade, facilidade para ampliar a escala, transparência, correção/robusteza 
+
+--
+
+- acessível (em comparação a outras linguagens de programação)
+
+--
+
+- muito comum na Biologia, Ciência de Dados e outras áreas. A escolha para quem precisa fazer analises estatísticas
+
+--
+
++ __interdisciplinar e modular__: muitos pacotes são escritos por especialistas 
+
+--
+
++ uma filosofia de passar facilmente do uso à  programação
+
+---
+## por que R?
+
++ ferramentas para __comunicar os resultados__: manuscritos, presentações, _apps_
+
+--
+
++ comunicação com otras linguagens de programação (ex. python e __reticulate__) 
+
+--
+
++ ótima capacidade gráfica 
+
+--
+
++ __suporte oficial__: documentação, vignettes, listas de email
+
+--
+
++ __suporte não oficial__: uma comunidade ativa: listas de email, grupos de usuáries (useR), capítulos de .purple[R-Ladies+], comunidade de  [RStudio](community.rstudio.com/), 
+Stack Overflow,
+
+&lt;img src="https://raw.githubusercontent.com/rladies/starter-kit/master/stickers/rainbow-inclusive.png" width="150" /&gt;
+
+---
+## `R` tem uma estrutura modular: __pacotes__
+--
+
++ a instalação de base de `R` inclui pacotes mantidos pelo __`R` Core Development Team__
+
+--
+
++ repositório oficial de pacotes: __CRAN__ (The Comprehensive `R` Archive Network [https://cran.r-project.org/](https://cran.r-project.org/)) or Bioconductor, GitHub, rOpenSci.org
+
+--
+
++ pacotes fora da instalação de base precisam ser __instalados__ e __carregados__
+
+--
+
++ os pacotes são coleções de __funções__ 
+
+--
+
++ as funções têm __opções__: "parâmetros", "argumentos"
+
+--
+
++ vamos manter a convenção `nome_da_funcao()` e `pacote::nome_da_funcao()` quando for preciso especificar o pacote ao qual a função pertence. 
+
+---
+## Então vamos instalar o `R`
+--
+
++ A instalação padrão do R é feita a partir do CRAN, uma rede de servidores espalhada pelo mundo que armazena versões idênticas e atualizadas de códigos e documentações para o R.
+
+--
+
++ Para instalar o R no Windows, siga os seguintes passos:
+
+--
+
++ Acesse o CRAN: https://www.r-project.org/
+
+--
+
++ No menu à esquerda, encontre a opção Download e clique em CRAN.
+
+--
+
++ Escolha a opção de servidor (mirror) mais próxima de você.
+
+---
+## Então vamos instalar o `R`. 
+--
+
++ Clique na opção base. Na nova página, clique em **Download R x.x.x for Windows*, sendo x.x.x o número da versão que será baixada. Em qualquer problema, tente escolher outro servidor no passo 3.
+
+--
+
++ Feito o download, clique duas vezes no arquivo baixado e siga as instruções para instalação.
+
+--
+
++ Para realizar o Download `R` 4.1.0 para Windows, clique no link:(https://cran.r-project.org/bin/windows/base/R-4.1.0-win.exe)
+
+--
+
++ pacotes fora da instalação de base precisam ser __instalados__ e __carregados__
+
+---
+## Então vamos instalar o `R Studio`. 
+--
+
++ Agora vamos instalar a versão open source do RStudio, a IDE que utilizaremos para escrever e executar códigos em R.
+
++ Para instalar o RStudio no Windows, siga os seguintes passos:
+
++ Acesse a página de downloads da RStudio: https://rstudio.com/products/rstudio/download/#download
+
++ Se você tiver acesso administrador, baixe a versão referente ao seu sistema operacional que está na lista de All Installers.
+
++ Se você não tiver acesso de administrador, baixe a versão referente ao seu sistema operacional que está na lista de Zip/Tarballs.
+
++ Clique duas vezes no arquivo baixado e siga as instruções para instalação.
+
+---
+background-image:url("figs/carcaca.jpg")
+background-size: 50%
+background-position: 50% 70%
+
+## Pense no R assim
+
+---
+background-image:url("figs/caminhao.jpg")
+background-size: 50%
+background-position: 50% 70%
+
+## E agora pense no R Studio 
+
+
+
+---
+background-image:url("figs/rstudio.png")
+background-size: 60%
+background-position: 50% 90%
+
+## Visão do RStudio 
+
+---
+## RStudio 
+
++ tela separada em três paineis. criar um __script__ abre o quarto painel. 
+
++ podemos executar código no console mas vamos usar o __script__ para guardar os passos. 
+
++ escrever no script e clicar `control + enter` para mandar o conteúdo para o console.
+
++ outras abas: help, environment, plots, files... 
+
+&lt;!-- aqui NO! crear objetos, mostrar environment, mostrar ls() y mostrar el help y parar en files --&gt;
+
+---
+class: inverse, middle, center
+## configuração e organização de projetos 
+
+---
+## pasta de trabalho
+
++ R tem que saber __em que pasta você está trabalhando__, para poder buscar os arquivos que você quer ler, e saber onde guardar os resultados de suas análises: __working directory__: pasta de trabalho
+
+--
+
++ para saber onde você está: `getwd()`
+
+--
+
++ você pode mudar esta localização usando `setwd()` mas não é recomendado (erros!) [Jenny Bryan](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
+
+--
+
++ melhor: em vez de abrir RStudio e trocar a pasta, abrir um script de R (extensão `.R`) ou um projeto de __RStudio project__ (extensão `.Rproj`) __já na pasta onde você vai trabalhar__. (Igual ao que você faria abrindo um arquivo 
+
+---
+## organização de projetos e Boas Práticas
+
++ cada projeto de análise de dados deveria estar em __uma única pasta__
+
+--
+
++ __subpastas__ para organizar o conteúdo.
+
+--
+
++ em vez de usar __caminhos absolutos__ é melhor usar __caminhos relativos__
++ evite `C://usuario/seu_nome/suas_pastas/seu_projeto` -&gt; caminho absoluto
++ `.` "aqui" (o resultado de `getwd()`)
++ `./subpastas` (ex. `/figs`)
++ o nível acima `..`
+
+--
+
++ os __dados originais__ não devem ser modificados. qualquer modificação deve ser salva à parte, junto com os scripts que fizeram a modificação.
+
+---
+## o projeto atual
+
+```
+./nome_do_projeto/
+├── README.md
+├── codigo
+├── dados
+│   ├── brutos
+│   └── processados
+├── figs
+└── nome_do_projeto.Rproj
+```
+
+---
+## os projetos de RStudio
+
++ arquivos __opcionais__, com extensão __.Rproj__ para abrir a sessão de R no local correto
+
+--
+
++ um projeto de RStudio pode ser criado clicando no canto superior direito (`Project: none &gt; New project`)
+
+---
+class: inverse, middle, center
+
+## Introdução a R
+
+
+
+---
+## criação de objetos
+
++ executar no script ou no console -&gt; não cria nada
+
+-- 
+
++ `&lt;-` serve para atribuição a objetos - *ALT + - *
+
+--
+
++ cria dentro do espaço de trabalho "__workspace__", aba __Environment__ de RStudio
+
+--
+
++ pode explorar o conteúdo com `ls()` (listar)
+
+--
+
++ quando você cria objetos eles ocupam memória RAM do computador
+
+--
+
++ o __workspace__ pode ser salvo e carregado entre sessões mas não é recomendável fazer isto `#boaspráticas`
+
+
+---
+## criação de objetos
+
+
++ confiar no __script__ para recriar todos os objetos (__reprodutibilidade!__)
+
+--
+
++ guardar os objetos importantes como __tabelas__, __figuras__, ou objetos individuais de R (`.rda` ou `.rdata`)
+
+--
+
++ um script deve ler ou criar objetos no início e salvar resultados no final
+
+--
+
++ é bom criar diferentes __scripts sucessivos__ para manter a ordem
+
+--
+
++ você pode perder controle de como foram criados os objetos
++ pode guardar objetos com erros e isto pode interferir no seu trabalho
+
+---
+background-image:url("figs/0a_setup.png")
+background-size: 60%
+background-position: 60% 100%
+
+.pull-left[
+#### nas opções gerais
+]
+
+
+---
+## tipos de dados em R
+
++ R entende dados __numéricos__ (_numeric_, e _integer_ para números inteiros), de __texto__ (_character_), valores lógicos (`TRUE/FALSE`), entre outros.
+
+&lt;small&gt;
+
+
+```r
+populacao &lt;- c(1500, 2000) 
+estados &lt;- c("Acre", "Alagoas", "Amapá", "Amazonas", "Tocantins")
+class(populacao)
+```
+
+```
+## [1] "numeric"
+```
+
+```r
+class(estados)
+```
+
+```
+## [1] "character"
+```
+&lt;/small&gt;
+
+---
+## tipos de dados em R
+
+&lt;small&gt;
+
+
+```r
+verdadeiro_falso &lt;- c(FALSE, TRUE)
+verdadeiro_falso
+```
+
+```
+## [1] FALSE  TRUE
+```
+
+```r
+class(verdadeiro_falso)
+```
+
+```
+## [1] "logical"
+```
+
+```r
+posicao &lt;- c(1L, 2L)
+posicao
+```
+
+```
+## [1] 1 2
+```
+
+```r
+class(posicao)
+```
+
+```
+## [1] "integer"
+```
+&lt;/small&gt;
+
+---
+## vetores
+
++ `c()` para criar - "concatenar"
+
+
+```r
+str(estados) #estrutura
+```
+
+```
+##  chr [1:5] "Acre" "Alagoas" "Amapá" "Amazonas" "Tocantins"
+```
+
+```r
+length(estados)
+```
+
+```
+## [1] 5
+```
+
+---
+## selecionando elementos de vetores (_subsetting_)
+
++ entre __colchetes__ `[]`
++ com vetores de __posição__ ou vetores __lógicos__ (`TRUE/FALSE`)
+
+
+&lt;small&gt;
+
+```r
+estados &lt;- c("Acre", "Alagoas", "Amapá", "Amazonas", "Tocantins")
+estados[1]
+estados[c(TRUE, FALSE, TRUE, FALSE)]
+estados[1:2]
+estados[1:4]
+#estados[ 1,3,5] #NAO! a vírgula marca dimensões
+estados[c(1,3,5)] #tem que ser um vetor
+```
+&lt;/small&gt;
+
+---
+## subsetting com cláusulas lógicas 
+
+
+```r
+casos &lt;- c(150, 200, 400, 500, 500, 600)
+casos &gt; 150
+casos[casos &gt; 150]
+casos &gt;= 150 # superior ou igual
+casos &lt; 300
+casos == 200
+casos != 200
+```
+
+---
+## operadores lógicos
+
+.pull-left[
++ igualdade: `==`
++ diferença: `!=` (`!` em geral é negação)
++ desigualdades: `&lt;`. `&gt;`, `&lt;=`, `&gt;=`
++ união (OR/OU): `|`
++ interseção (AND): `&amp;`
++ pertenecimento: `%in%`
++ _não_ pertenecimento: `!a %in% b`
+]
+
+.pull-right[
++ `casos == 200`
++ `casos != 200`
++ `casos &lt; 300`, `casos &gt;= 150`
++ `casos &lt; 200 | casos &gt; 500`
++ `casos &gt; 200 &amp; casos &lt; 500`
++ `casos %in% c(100, 200, 300)`
++ `!casos %in% c(400)`
+]
+
+O operador lógico cria um __vetor lógico__, a seleção vai entre colchetes:
+
+
+```r
+casos[casos &gt; 150]
+```
+
+```
+## [1] 200 400 500 500 600
+```
+
+---
+##  criando vetores numéricos
+
+
+```r
+1:10
+seq(1, 10, 2)
+rep(1:4, 2)
+rep(1:4, each = 2)
+unique(casos)
+```
+
+---
+## estruturas de dados em `R`
+
++ __vetor__: lineal, uma dimensão só: `length()`
+
+--
+
++ __fatores__: vetores  que representam __variáveis categóricas__ e portanto têm níveis (__levels()__) `factor(estados)`
+
+--
+
++ __matrizes__: arranjos de duas dimensões de __dados do mesmo tipo__ (`dim()`, `nrow()`, `ncol()`). 
+
+--
+
++ __listas__: literalmente listas de qualquer outro objeto (inclusive listas) 
+
+--
+
++ __data frames__: arranjos bi-dimensionais de dados de diferentes tipos (i.e., uma coluna numérica, outra com nomes, outra com um fator etc.)
+
+
+---
+## instalando pacotes
+
+
+```r
+# Para instalar pacotes desde CRAN
+install.packages("remotes")
+
+
+# Para instalar coronabr desde GitHub
+remotes::install_github("cccneto/Ibamam")
+
+# Para carregar pacotes
+library(name_pckg)
+
+# Para buscar ajuda
+?name_pckg
+```
+
+---
+## funções, argumentos e entendendo a ajuda
+
+.pull-left[
+```
+help(funcao)
+?funcao
+??palavra_chave
+args(funcao)
+```
+]
+
+.pull-right[
+```r
+help("get_corona_br")
+?get_corona_br
+??corona
+args(get_corona_br)
+```
+]
+
++ ou selecionar o nome da função e clicar __F1__
+
++ No __help__ estão os argumentos na ordem correta, e os valores padrão (por _default_) estão indicados. Se a gente não especificasse a função usaria esses valores.  
+
+---
+## download dos dados para Amapá
+
+
+```r
+library(coronabr)
+```
+
+
+```r
+caminho &lt;- "dados/brutos"
+if (!dir.exists(caminho)) {
+  dir.create(caminho)
+}
+get_corona_br(dir = caminho, 
+              filename = "01-amapa", 
+              uf = "AP")
+```
+
+
+```r
+amapa &lt;- read.csv("dados/brutos/01-amapa.csv", 
+                  stringsAsFactors = FALSE, 
+                  encoding = "UTF-8")
+class(amapa)
+```
+
+```
+## [1] "data.frame"
+```
+
+---
+## inspecionar objetos `data.frame`
+
+
+```r
+names(amapa)
+dim(amapa)
+nrow(amapa)
+ncol(amapa)
+head(amapa) # 6 linhas por padrão
+tail(amapa)
+rownames(amapa)
+length(amapa) # numero de colunas
+summary(amapa) # quantis e a média 
+```
+
+---
+## selecionar colunas e filtrar linhas
+
++ entre colchetes também mas __as dimensões separadas por uma vírgula__
+
+`amapa[linhas, colunas]`
+
+
+```r
+amapa[1:3, 1:3] # 3 primeiras linhas, e três primeiras colunas
+```
+
+```
+##     city city_ibge_code       date
+## 1 Macapá        1600303 2020-03-20
+## 2   &lt;NA&gt;             16 2020-03-20
+## 3 Macapá        1600303 2020-03-21
+```
+
+```r
+amapa[4, 13] #quarto elemento da coluna 13
+```
+
+```
+## [1] 0
+```
+
+---
+## fontes de ajuda 
+
++ Material de estudo em português [link](https://github.com/beatrizmilz/materiais_estudo_R)
++ [LearnR4Free](https://www.learnr4free.com/) em inglês e em espanhol
++ Disciplina *Projetos de análise de dados usando R* [link](https://github.com/liibre/curso)
++ R Reference Card [PDF](https://cran.r-project.org/doc/contrib/Short-refcard.pdf)
++ Base R cheatsheet [PDF](https://raw.githubusercontent.com/rstudio/cheatsheets/master/base-r.pdf)
++ R Taskviews: listas de pacotes por tema curados por especialistas [link](https://cran.r-project.org/web/views/) 
++ Livro [R for Data Science](https://r4ds.had.co.nz/)
++ Pacote **dados**: os conjuntos de dados de R4DS traduzidos para o português: [GitHub](https://github.com/cienciadedatos/dados)
++ RStudio cheatsheet [PDF](https://raw.githubusercontent.com/rstudio/cheatsheets/master/rstudio-ide.pdf)
++ RStudio Data Import Cheatsheet [PDF](https://raw.githubusercontent.com/rstudio/cheatsheets/master/data-import.pdf)
++ R Bloggers https://www.r-bloggers.com/
+
+---
+## Onde pedir ajuda? 
+
++ Latin-R http://bit.ly/latinr-slack 
++ RLadies+ https://rladies.org/
++ Slack da comunidade RLadies+ https://rladies-community-slack.herokuapp.com/
++ YouTube de RLadies+ global https://www.youtube.com/c/RLadiesGlobal
++ Comunidade de RStudio https://community.rstudio.com/
++ Configuração das opções globais de RStudio [link](https://support.rstudio.com/hc/en-us/articles/200549016-Customizing-RStudio)
++ [Stack OverFlow](https://pt.stackoverflow.com/)
++ E os coleguinhas de turma!
+
+---
+class: inverse, middle, center
+## Proximo titulo da seção
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
