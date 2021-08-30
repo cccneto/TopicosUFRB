@@ -1,0 +1,1117 @@
+---
+title: "Funções no R"
+subtitle: 'Material adaptado das aulas da Dra. Ariel Muldoon'  
+author: "Claudiano Neto"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, wrap.css]
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+      beforeInit: "https://platform.twitter.com/widgets.js"
+---
+
+```{r setup, include = FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+library(formatR)
+```
+
+```{r xaringan-themer, include = FALSE, warning = FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#8c1503",
+  secondary_color = "#59594b",
+  inverse_header_color = "#FFFFFF",
+  title_slide_text_color = "#FFFFFF",
+  base_font_size = "22px",
+  link_color = "#F4790B",
+  code_highlight_color = "rgba(244, 121, 11, 0.5)"
+)
+```
+
+
+```{r xaringan-scribble, echo = FALSE}
+xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+xaringanExtra::use_clipboard()
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+```{r broadcast, echo=FALSE}
+xaringanExtra::use_broadcast()
+```
+
+## Objetivos de Hoje
+
+Visão geral   
+-     **Compreender e aprender a escrever funções básicas em R**   
+
+Nós iremos
+
+- Aprender a controlar a entrada e a saída de funções em R
+- Ler as funções existentes
+- Usar as condições para retornar diferentes saídas com base nas entradas
+
+--
+
+<br/>
+
+---
+
+## O que é uma função?
+
+.center[
+```{r, echo = FALSE, out.width = "75%", fig.cap = "From Stephanie Kirmer's Functions in R presentation", fig.alt = "A schematic showing inputs going into a 'function' that produces output based on those inputs."}
+knitr::include_graphics("figs/week06_files/function_diagram.png")
+```
+]
+
+???
+
+As funções recebem entradas, realizam alguns conjuntos de tarefas e geram a saída que desejamos. R é baseado em funções e as pessoas já estão usando aquelas que outros criaram em seu trabalho diário com R
+
+---
+
+## Quando escrever sua própria função?
+
+- Quando fizer tarefas repetitivas
+
+
+<blockquote class="twitter-tweet tw-align-center" data-lang="en"><p lang="en" dir="ltr">Write same code three times, write a function</p>&mdash; David Robinson (@cantabile) <a href="https://twitter.com/drob/status/928447584712253440">Tweet November 8, 2017</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<br/>
+- Para fazer uma tarefa específica ou obter um tipo específico de saída  
+
+???
+
+Principalmente sobre como copiar e colar código repetidamente
+Também pode obter exatamente o que deseja se outras funções não o fizerem
+
+---
+
+## Nomeando suas funções
+
+Ao começar a criar funções, você precisará *nomeá-las*.
+
+Algumas regras gerais de estilo:
+- Torne os nomes das funções legíveis e descritivos
+- Tente ser conciso, mas os nomes significativos que indicam o que a função faz são mais importantes
+- Seja consistente em seu estilo de nomenclatura. Por exemplo, não nomeie uma função de plotagem `make_scatterplot()` e outra `barplotFunction()`.
+
+---
+
+## Nomear suas funções
+
+
+.pull-left[
+Estilos de nomes comuns em R
+```{r, echo = FALSE, fig.cap = "Artwork by @allison_horst", fig.alt = "Artwork by Allison Horst to show the different naming conventions in R, including snake case, camel case, kebab case, etc ."}
+knitr::include_graphics("figs/week06_files/coding_cases.png")
+```
+]
+
+.pull-right[
+.footnote[
+Leia mais sobre convenções e estilos de nomenclatura de funções em [*R for Data Science*](https://r4ds.had.co.nz/functions.html#functions-are-for-humans-and-computers)
+]
+]
+
+
+???
+
+Estaremos usando `snake_case` hoje, mas você pode decidir usar outra coisa em seu próprio trabalho.
+
+---
+
+
+class: center, middle, inverse, hide-logo
+
+# <font style="font-family: cursive; font-style:italic">Let's get started!</font>
+
+---
+
+## Rodando o código
+
+<br/><br/>
+**Set up**  
+
+Aprenderemos a escrever funções executando primeiro o código de exemplo que já escrevi.
+
+No final de cada seção, você terá a chance de praticar o que acabamos de ver.
+
+---
+
+## Estrutura de uma função
+
+Nós criamos funções com a função `function()`. Isto envolve:
+
+.pull-left[
+1.  Atribuir um nome para a nova função.
+]
+
+
+.pull-right[
+```{r myfun, eval = FALSE}
+my_function = #<<
+    function(argument1, etc.) {
+    <Write code here>
+    return(output)
+}
+```
+]
+
+---
+
+## Estrutura de uma função
+
+Nós criamos funções com a função `function()`. Isto envolve:
+
+.pull-left[
+1.  Atribuir um nome para a nova função.
+
+2.  Permitir entradas para a função como * argumentos * dentro de `function()`. As entradas são valores ou objetos que usaremos na função.
+
+]
+
+
+.pull-right[
+```{r, eval = FALSE}
+my_function = function(argument1, etc.) { #<<
+    <Write code here>
+    return(output)
+}
+```
+]
+
+---
+
+## Estrutura de uma função
+
+We create functions with `function()`. This involves:
+
+.pull-left[
+1. Atribuindo um nome para a nova função. Use o seu operador de atribuição preferido.
+
+2. Permitir entradas para a função como * argumentos * dentro de `function()`. As entradas são valores ou objetos que usaremos na função.
+
+3. Escrever código para criar a saída da função. Este código fica entre as chaves (`{`) e usa as entradas fornecidas para retornar uma única saída.
+]
+
+
+.pull-right[
+```{r, eval = FALSE}
+my_function = function(argument1, etc.) {
+    <Write code here> #<<
+    return(output) #<<
+}
+```
+]
+
+---
+
+## Estrutura de uma função
+
+.pull-left[
+Depois de executar o código para criar uma função, nós o usamos como outras funções em R, passando entradas para cada argumento.
+]
+
+.pull-right[
+```{r, eval = FALSE}
+my_function(argument1 = input1, etc.)
+```
+]
+
+---
+
+## Função Básica
+
+Vamos começar com uma função bem básica
+
+.pull-left[
+Esta função, nomead `return_input`, terá um unico argumento, `input`. 
+
+Ela irá simplesmente retornar o que colocarmos como input.
+]
+
+.pull-right[
+```{r}
+return_input = function(input) {
+    return(input)
+}
+```
+]
+
+---
+
+## Função Básica
+
+O objetivo aqui é que você veja como fornecemos entrada para o argumento `input` e a função retorna uma saída com base nessa entrada.
+
+--
+
+.pull-left[
+Por exemplo, pode dar um único valor numérico ao `input`.
+]
+
+.pull-right[
+```{r}
+return_input(input = 1)
+```
+]
+
+---
+
+### Sua vez
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Passe alguns minutos passando diferentes valores e objetos para o argumento `input` de` return_input() `e olhando para a saída.
+
+Passe o seguinte para o argumento `input`:
+- A letra `"a"`
+- Uma série de letras usando `letters[1:5]`
+- Um vetor de números como `c(1, 5, 9, 10)`
+- O data.frame `mtcars`
+
+```{r, echo = FALSE}
+library(countdown)
+countdown(minutes = 2, 
+          bottom = 0,
+          color_border = "#F4790B",
+          color_text = "#1c5253",
+          color_running_background = "#1c5253",
+          color_running_text = "#F4790B",
+          color_finished_background = "red",
+          color_finished_text = "#1c5253")
+```
+
+---
+
+## Uma função com 2 argumentos
+
+Uma função pode ter quantos argumentos quisermos. Continuamos adicionando-os em `function()` quando definimos a função.
+
+Como ocorre com as funções de nomenclatura, é útil manter os nomes dos argumentos descritivos.
+
+--
+
+.pull-left[
+Nossa próxima função, chamada `sum_two`, tem dois argumentos e produz a soma das duas entradas.
+]
+
+.pull-right[
+```{r}
+sum_two = function(num1, num2) {
+    sum = num1 + num2
+    return(sum)
+}
+```
+]
+
+---
+
+## Uma função com 2 argumentos
+
+.pull-left[
+isso é o que parece se passarmos valores numéricos únicos para os dois argumentos em `sum_two`.
+]
+
+.pull-right[
+```{r}
+sum_two(num1 = 1, 
+        num2 = 2)
+```
+]
+
+---
+
+### Sua vez 1
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Primeiro, quero que você veja o que acontece com alguns tipos diferentes de entrada para os dois argumentos em `sum_two`.
+
+Passe as seguintes entradas para `num1` e `num2`:
+- Vetores de números, `c(1, 5, 9, 10)` e `c(2, 3, 4, 5)`
+- Letras, `"a"` e `"b"`
+
+```{r, echo = FALSE}
+countdown(minutes = 2, 
+          bottom = 0)
+```
+
+--
+
+<br/><br/><br/>
+O que aconteceu quando você colocou as letras?
+
+
+---
+
+### Sua vez 2
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Pratique escrever sua própria função, chamada `norm_by_y`.
+
+A função deve receber dois números como entrada e retornar a diferença entre os números divididos pelo segundo número.
+
+A equação para o que estou descrevendo se parece com: (x - y) / y
+
+
+```{r, echo = FALSE}
+countdown(minutes = 5, 
+          bottom = 0)
+```
+
+---
+
+### Sua vez 2 - solução
+
+```{r}
+norm_by_y = function(num1, num2) {
+    result = (num1 + num2)/num2
+    return(result)
+}
+```
+
+---
+
+## Remover `return()` explícito.
+
+Eu queria começar usando `return()` na função porque acho que torna explícito o que é retornado.
+
+No R, não é padrão usar este estilo de codificação. A simples impressão do objeto de saída *retornará* a saída.
+
+--
+
+.pull-left[
+Aqui temos as mesmas duas funções que tinhamos previamente feito sem usar explicitamente o `return()`.
+
+```{r}
+return_input = function(input) {
+    input
+}
+return_input(input = 1)
+```
+]
+
+.pull-right[
+<br/><br/>
+```{r}
+sum_two = function(num1, num2) {
+    sum = num1 + num2
+    sum
+}
+sum_two(num1 = 1, 
+        num2 = 2)
+```
+]
+
+???
+
+Usar retornos explícitos é útil quando você está começando a pensar sobre entradas e saídas.
+
+---
+
+## Explore funções existentes
+
+Aprender a escrever funções ajuda a entender as funções existentes.
+
+Dar uma olhada no código subjacente pode nos ajudar a descobrir o que uma função está fazendo e, potencialmente, nos ajudar a descobrir de onde podem surgir quaisquer problemas que estamos tendo.
+
+--
+
+.pull-left[
+Você pode ver o código em uma função se você rodar o nome da função sem parenteses no R.
+]
+
+.pull-right[
+```{r}
+sum
+```
+]
+
+???
+
+---
+
+## Explore funções existentes
+
+.pull-left[
+No RStudio you pode usar `View()` para abrir a função em uma nova janela em seu painel `Source`. 
+
+Isso pode ser mais fácil de examinar, especialmente para funções longas.
+]
+
+.pull-right[
+```{r, eval = FALSE}
+View(sum)
+```
+
+.center[
+```{r, echo = FALSE, out.width = "75%", fig.alt = "A screenshot showing the new pane that opens when viewing a function. This uses the union() function as the example."}
+knitr::include_graphics("figs/week06_files/view_function.png")
+```
+]
+]
+
+<br/><br/>
+**Note:** Muitas funções R base são escritas em C ++ e, portanto, não retornam código.
+
+???
+
+---
+
+### Sua vez
+
+Escreva o código no fragmento de código fornecido.
+
+Dedique alguns minutos e explore o código na função `union()`.
+
+Primeiro, use os vetores `x` e` y` fornecidos no trecho como entradas para `union()`.
+
+Em seguida, vá até o código da função `union()` uma etapa de cada vez.
+1. Use `as.vector()` em cada objeto.
+2. Concatene os dois objetos com `c()`.
+3. Use `exclusivo()` no vetor da etapa 2.
+
+```{r, echo = FALSE}
+countdown(minutes = 5, 
+          bottom = 0)
+```
+
+---
+
+### Sua vez - solução
+
+Aqui está um exemplo de como eu tentaria fazer o código `union()`, decompondo cada parte do código.
+
+```{r, eval = FALSE}
+x = c(1, 2, 3)
+y = c(2, 3, 4)
+
+# Using union()
+union(x = x, y = y)
+
+# Using code within union()
+as.vector(x)
+as.vector(y)
+
+c(as.vector(x), as.vector(y))
+
+unique(c(as.vector(x), as.vector(y)))
+```
+
+---
+
+## Retornando multiplos outputs
+
+Uma função em R pode retornar apenas uma única saída, mesmo se tentarmos retornar mais.
+
+--
+
+.pull-left[
+Para demonstrar isso, aqui está uma tentativa de retornar a soma de dois números, bem como os dois números originais usando a função `return_all()`.
+]
+
+.pull-right[
+```{r}
+return_all = function(num1, num2) {
+    sum = num1 + num2
+    sum
+    num1
+    num2
+}
+```
+]
+
+---
+
+## Retornando multiplos outputs
+
+O que acontece quando usamos esta função?
+
+.pull-left[
+Ele retorna a última coisa que pedimos. Neste caso, a última coisa que pedimos é a entrada para `num1`.
+]
+
+.pull-right[
+```{r}
+return_all(num1 = 1, 
+           num2 = 2)
+```
+]
+
+---
+
+## Retornando multiplos outputs
+
+
+.pull-left[
+Se quisermos várias saídas, precisaremos combinar as saídas em uma.
+
+Uma lista é uma opção para isso.
+
+O código de exemplo mostra uma lista *nomeada*.
+]
+
+.pull-right[
+```{r}
+return_all2 = function(num1, num2) {
+    sum = num1 + num2
+    list(sum = sum, #<<
+         num1 = num1, #<<
+         num2 = num2) #<<
+}
+
+return_all2(num1 = 1, 
+            num2 = 2)
+```
+]
+
+---
+
+## Retornando múltiplos outputs
+
+.pull-left[
+Um data.frame como output é útil de várias formas.
+]
+
+.pull-right[
+```{r}
+return_all3 = function(num1, num2) {
+    sum = num1 + num2
+    data.frame(sum = sum, #<<
+               num1 = num1, #<<
+               num2 = num2) #<<
+}
+
+return_all3(num1 = 1, 
+            num2 = 2)
+```
+]
+
+---
+
+### Sua vez
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Volte para a função que você criou anteriormente, chamada `norm_by_y()`.
+- Adicione 2 ao final do nome da função.
+- Edite a função para que ela retorne *(x - y) / y* e *(x - y)* em uma lista.
+
+```{r, echo = FALSE}
+countdown(minutes = 5, 
+          bottom = 0)
+```
+
+---
+
+### Sua vez Solução
+
+```{r}
+norm_by_y2 = function(num1, num2) {
+    result1 = (num1 - num2)/num2
+    result2 = num1 - num2
+    list(result1, result2)
+}
+```
+
+---
+
+## Argumentos Padrão
+
+Podemos atribuir valores padrão aos argumentos. Se usarmos o padrão, não temos que escrever esse argumento.
+
+--
+
+.pull-left[
+Por exemplo, `na.rm = FALSE` é o padrão/default na função `mean()`. 
+
+Vamos fazer uma função construída em torno de `mean()` onde o padrão é `TRUE`. Dessa forma, os valores `NA` são automaticamente removidos.
+]
+
+.pull-right[
+```{r}
+mean_nona = function(vector, 
+                     remove.na = TRUE) {
+  mean(vector, na.rm = remove.na)
+}
+```
+
+<br/>
+Observe que o padrão `remove.na` é` TRUE`. Esta entrada é passada para o argumento `na.rm` dentro de` mean() `dentro de nossa função.
+]
+
+---
+
+## Argumentos Padrão
+
+.pull-left[
+Veja como isso funciona se o vetor contém `NA`. Não precisamos escrever o argumento `remove.na`.
+]
+
+.pull-right[
+```{r}
+mean_nona(vector = c(1, 2, NA))
+```
+]
+
+---
+
+## Argumentos Padrão
+
+.pull-left[
+Para mudar o default, passe `FALSE` ao argumento `remove.na`.
+]
+
+.pull-right[
+```{r}
+mean_nona(vector = c(1, 2, NA),
+          remove.na = FALSE) #<<
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+Este parece ser um bom momento para falar sobre escrever *nomes* dos argumentos em vez de usar *posições* dos argumentos. Ambos são permitidos e podem funcionar bem.
+
+.pull-left[
+Usar posições de argumento tende a levar a um código pouco claro.
+
+Para qual argumento a segunda entrada passa?
+]
+
+.pull-right[
+```{r}
+mean(c(1:10, 50), 0.1)
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+.pull-left[
+Escrever nomes de argumento neste caso torna o código um pouco mais compreensível.
+]
+
+.pull-right[
+```{r}
+mean(x = c(1:10, 50), 
+     trim = 0.1)
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+Na maioria das vezes, recomendo escrever nomes de argumento para código claro. No entanto, há casos em que podemos não precisar fazer isso, especialmente para funções geralmente conhecidas.
+
+--
+
+.pull-left[
+Por exemplo, para funções de ajuste de modelo como `lm()`, o primeiro argumento é sempre a fórmula do modelo.
+
+Isso é muito conhecido e é bastante normal deixar o nome do argumento `fórmula` fora.
+]
+
+.pull-right[
+```{r}
+lm(mpg ~ disp, data = mtcars)
+```
+]
+
+--
+
+Pacotes como **dplyr** usam o conjunto de dados como o primeiro argumento como padrão, e você raramente verá o nome do primeiro argumento escrito.
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+Às vezes, você verá código de usuários avançados em que eles cortaram atalhos e pararam de escrever nomes de argumentos. Isso pode levar a erros se você não souber o que está fazendo.
+--
+
+.pull-left[
+Por exemplo, se eu quisesse ajustar uma regressão ponderada, deixaria de fora `fórmula`, mas então usaria outros nomes de argumento para definir o conjunto de dados em `dados` e pesos em `pesos`.
+]
+
+.pull-right[
+```{r}
+lm(mpg ~ disp, 
+   data = mtcars, 
+   weights = cyl)
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+.pull-left[
+O que acontecerá se eu deixar esses nomes de argumento desativados?
+
+```{r}
+lm(mpg ~ disp, mtcars, cyl)
+```
+]
+
+--
+
+.pull-right[
+<br/><br/>
+O terceiro argumento para `lm()` é `subconjunto`, não `pesos`.
+
+Felizmente, o `call` na saída mostra o erro, mas pode ser fácil de passar despercebido.
+
+Já vi pessoas cometerem esse tipo de erro e não perceberem em uma análise real.
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+Incluir `...` dentro de `function()` é uma maneira de passar argumentos adicionais que podem ser usados dentro da função. Isso é mais comum para passar argumentos para funções existentes dentro daquela que você está criando.
+
+--
+
+.pull-left[
+Por exemplo, digamos que estivéssemos usando novamente `mean()` dentro de nossa função para calcular uma média.
+]
+
+.pull-right[
+```{r}
+new_mean = function(vector) {
+  mean(vector)
+}
+```
+
+Se usarmos um vetor que contém `NA`, ele retorna `NA` por padrão.
+
+```{r}
+new_mean(vector = c(1, 2, NA))
+```
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+Queremos ser capazes de passar `na.rm = TRUE` para a função. Uma vez que já é um argumento disponível em `mean()`, podemos usar `...` para isso.
+
+.pull-left[
+Nós literalmente adicionamos `...` nos argumentos da função e então usamos novamente onde queremos usar os argumentos adicionais.
+]
+
+.pull-right[
+```{r}
+use_mean2 = function(vector, ...) {
+  mean(vector, ...)
+}
+```
+
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+Agora podemos fornecer argumentos de `mean()` enquanto usamos nossa função.
+
+.pull-left[
+Qualquer coisa que colocarmos após o argumento `vector` é passado para `mean()`.
+]
+
+.pull-right[
+```{r}
+use_mean2(vector = c(1, 2, NA),
+         na.rm = TRUE) #<<
+```
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+**Nota importante:** Ao usar `...`, qualquer argumento incorreto não gerará um erro e, portanto, você pode não perceber os erros de digitação que fez.
+
+.pull-left[
+Veja o que acontece quando eu escrevo incorretamente `na.rm` como` na.rn`.
+]
+
+.pull-right[
+```{r}
+use_mean2(vector = c(1, 2, NA),
+         na.rn = TRUE) #<<
+```
+]
+
+---
+
+## Retornos Condicionais
+
+Quando fizemos `sum_two()`, pedi que você olhasse o erro que recebia quando passava caracteres quando a função usava números.
+
+```{r, error = TRUE}
+sum_two(num1 = "a", 
+        num2 = "b")
+```
+
+--
+
+
+Essa mensagem de erro não é particularmente clara.
+
+Adicionar *condições* nesta função para retornar uma mensagem útil se os valores não forem numéricos é um exemplo do que eu vi chamado Retornos condicionais ou *execução condicional*.
+
+---
+
+## Retornos Condicionais
+
+Adicionamos * condições * por meio de declarações lógicas, geralmente envolvendo declarações `if()` e `else()`.
+
+Na documentação para `if()` o **Uso** é:
+> if (cond) expr
+  
+--
+
+<br/><br/>
+Mais comumente em funções usaremos `if()` e `else()` juntos:
+> if(cond) cons.expr else alt.expr  
+  
+A condição if-else pode ser interpretada como:
+> Teste alguma condição. Se a condição for atendida, retorne uma coisa. Se não for atendido, retorne outra coisa.  
+
+---
+
+## Retornos Condicionais
+
+Aqui está um exemplo de esqueleto de uma instrução if-else. Observe a "condition" lógica entre parênteses e os dois conjuntos de chaves (`{`).
+
+```{r, eval = FALSE}
+if(condition) {
+    Do something
+} else {
+    Alternative something
+}
+```
+
+???
+
+Você verá as pessoas pularem de escrever as chaves (`{`) em alguns casos simples, mas recomenda-se ficar com elas para termos um código mais claro. Você pode ler uma opinião sobre o estilo de codificação em [R for Data Science](https://r4ds.had.co.nz/functions.html#code-style).
+
+---
+
+## Retornos Condicionais
+
+OK, estamos prontos para ver um exemplo. Vamos adicionar Retornos Condicionais à nossa função `sum_two()`.
+
+.pull-left[
+Isso usa `is.character` para testar se a entrada para `num1` é um caractere.
+
+Se for, ele retorna a mensagem. Se não for, ele retorna a soma.
+]
+
+.pull-right[
+```{r}
+sum_two_if = function(num1, num2) {
+    if(is.character(num1)) { #<<
+        "Você deve inserir um número ou vetor de números para num1."
+    } else {
+        num1 + num2
+    }
+}
+```
+]
+
+---
+
+## Retornos Condicionais
+
+.pull-left[
+Agora vamos dar uma olhada na saída quando usamos uma letra para `num1`.
+
+
+```{r}
+sum_two_if(num1 = "a", 
+           num2 = "b")
+```
+]
+
+--
+
+.pull-right[
+E aqui está a saída se passarmos um número para cada argumento.
+
+```{r}
+sum_two_if(num1 = 1, 
+           num2 = 2)
+```
+]
+
+---
+
+## Retornos Condicionais
+
+
+.pull-left[
+Podemos expandir a condição com uma instrução *ou * via `|`.
+
+Nesse caso, faz sentido testar se a entrada para *qualquer um* dos argumentos é um caractere.
+]
+
+.pull-right[
+```{r}
+sum_two_if2 = function(num1, num2) {
+    if(is.character(num1) | #<<
+       is.character(num2)) { #<<
+      "Você deve inserir um número ou vetor de números para num1 e num2."
+    } else {
+        num1 + num2
+    }
+}
+
+sum_two_if2(num1 = 1, 
+            num2 = "b")
+```
+]
+
+---
+
+### Sua vez 1
+
+Escreva o código no fragmento de código fornecido.
+
+Começando com a função `use_mean2()`, incluída no trecho:
+1. Adicione uma condição para testar se o argumento `vetor` é numérico usando` is.numeric`
+2. Se for, retorna a média do vetor
+3. Caso contrário, retorne uma mensagem explicando o que está errado
+
+```{r, echo = FALSE}
+countdown(minutes = 5, 
+          bottom = 0)
+```
+
+---
+
+### Sua vez 1 Solução
+
+```{r}
+use_mean2 = function(vector, ...) {
+    if(is.numeric(vector)) {
+          mean(vector, ...)
+    } else {
+        "Seu input não é numérico"
+    }
+}
+```
+
+---
+
+### Sua vez 2
+
+Dê uma olhada no código para a função `as.factor()`, que pega um vetor de valores para seu argumento `x`.
+
+Esta função contém várias condições use if-else e if-else. Tente resumir o que cada condição é e geralmente o que é feito em cada etapa.
+
+Eu comecei você para cada uma das três condições de retorno.
+
+1. Primeiro, a função verifica se ...
+2. Ignore a parte `!is.object(x)` da condição. Em segundo lugar, a função verifica ...
+3. Finalmente, se as outras duas condições não forem verdadeiras, a função ...
+
+```{r, echo = FALSE}
+countdown(minutes = 5, 
+          bottom = 0)
+```
+
+---
+
+### Sua vez 2 Solução
+
+1. Primeiro, a função verifica se a entrada já é um fator. Nesse caso, ele retorna a entrada.
+
+2. Ignore a parte `!is.object(x)` da condição. Em segundo lugar, a função verifica se a entrada é um número inteiro. Nesse caso, ele cria os níveis classificando os valores exclusivos, combina os níveis com os valores na entrada e torna o resultado um fator.
+
+3. Finalmente, se as outras duas condições não forem verdadeiras, a função usando a função `factor()` na entrada.
+
+---
+
+## Fazendo mais em uma função
+
+Até agora, escrevemos funções básicas de uma etapa. É claro que você pode realizar muitas e muitas etapas em uma função para obter a saída desejada.
+
+--
+
+.pull-left[
+Vamos fazer uma função um pouco mais longa.
+
+As funções `get_rsq()` recebem um conjunto de dados como entrada. Ele ajusta um modelo a esse conjunto de dados, obtém o resumo do modelo e, em seguida, puxa e arredonda o valor $R^2$ e retorna o $R^2$ arredondado.
+]
+
+.pull-right[
+```{r}
+get_rsq <- function(data) {
+    mod = lm(mpg ~ disp, data = data)
+    summ = summary(mod)
+    rsq = round(summ$r.squared, 
+                digits = 2)
+    rsq
+}
+```
+
+<br/>
+Observe que as variáveis `formula` em` lm() `são fixas, o que é uma configuração comum se você for analisar muitos conjuntos de dados com as mesmas variáveis neles.
+
+]
+
+---
+
+## Fazendo mais em uma função
+
+.pull-left[
+A função `get_rsq()` é configurada para uso com as variáveis no conjunto de dados `mtcars`.
+
+```{r}
+get_rsq(data = mtcars)
+```
+]
+
+--
+
+.pull-right[
+Isso significa que podemos passar um subconjunto dos dados como entrada para esta função.
+
+```{r}
+get_rsq(data = subset(mtcars, cyl == 4) )
+```
+]
+
+<br/><br/>
+Você usaria esse tipo de configuração para se preparar para *iterar* em muitos conjuntos de dados semelhantes, o que é um uso importante das funções.
+
