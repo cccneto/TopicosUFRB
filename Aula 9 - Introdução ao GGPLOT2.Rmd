@@ -623,13 +623,13 @@ font_add_google("Bangers", "Bangers")
 Agora, podemos usar essas famílias de fontes usando - sim, você adivinhou certo - `theme()`:
 
 ```{r title-style, message=F, warning=F}
-ggplot(chic, aes(x = date, y = temp)) +
-  geom_point(color = "firebrick") +
-  labs(x = "Ano", y = "Temperatura (°F)",
-       title = "Temperaturas em Chicago",
-       subtitle = "Temperaturas Diarias em Chicago entre 1997 e 2001 em graus Fahrenheit") +
-  theme(plot.title = element_text(family = "Bangers", hjust = .5, size = 25),
-        plot.subtitle = element_text(family = "Playfair", hjust = .5, size = 15))
+# ggplot(chic, aes(x = date, y = temp)) +
+#   geom_point(color = "firebrick") +
+#   labs(x = "Ano", y = "Temperatura (°F)",
+#        title = "Temperaturas em Chicago",
+#        subtitle = "Temperaturas Diarias em Chicago entre 1997 e 2001 em graus Fahrenheit") +
+#   theme(plot.title = element_text(family = "Bangers", hjust = .5, size = 25),
+#         plot.subtitle = element_text(family = "Playfair", hjust = .5, size = 15))
 ```
 
 Você também pode definir uma fonte não padrão para todos os elementos de texto de seus gráficos, para mais detalhes consulte a seção ["Trabalhando com Temas"](#themes). Vou usar *Roboto Condensed* como a nova fonte para todos os gráficos seguintes.
@@ -646,11 +646,11 @@ theme_set(theme_bw(base_size = 12, base_family = "Roboto Condensed"))
 
 Você pode usar o argumento `lineheight` para alterar o espaçamento entre as linhas. Neste exemplo, as linhas foram espremidas juntas (altura da linha < 1).
 ```{r multiline-title, message=F, warning=F}
-ggplot(chic, aes(x = date, y = temp)) +
-  geom_point(color = "firebrick") +
-  labs(x = "Ano", y = "Temperatura (°F)") +
-  ggtitle("Temperaturas em Chicago\nde 1997 a 2001") +
-  theme(plot.title = element_text(lineheight = .8, size = 16))
+# ggplot(chic, aes(x = date, y = temp)) +
+#   geom_point(color = "firebrick") +
+#   labs(x = "Ano", y = "Temperatura (°F)") +
+#   ggtitle("Temperaturas em Chicago\nde 1997 a 2001") +
+#   theme(plot.title = element_text(lineheight = .8, size = 16))
 ```
 
 [↑ Voltar para o Índice.](#toc)<br><br>

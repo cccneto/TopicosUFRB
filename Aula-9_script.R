@@ -81,3 +81,64 @@ ggplot(chic, aes(x = date, y = temp)) +
   labs(x = "Ano", y = "Temperatura (°F)") +
   ylim(c(0, 50)) # limitando de 0 a 50
   
+
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Ano", y = "Temperatura (°F)") +
+  # ylim(c(0, 50)) # limitando de 0 a 50
+  # scale_y_continuous(limits = c(0, 75))
+  coord_cartesian(ylim = c(0, 50))
+
+# passo 12 - forçando a plotar na origem do grafico
+
+chic_high <- dplyr::filter(chic, temp > 25, o3 > 20)
+
+ggplot(chic_high, aes(x = temp, y = o3)) +
+  geom_point(color = "darkcyan") +
+  labs(x = "Temperature higher than 25°F",
+       y = "Ozone higher than 20 ppb") +
+  expand_limits(x = 0, y = 0)
+
+# passo 13 - trabalhando com eixos de mesma escala
+
+ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
+  geom_point(color = "sienna") +
+  labs(x = "Temperatura (°F)", y = "Temperatura (°F) + random noise") +
+  xlim(c(0, 100)) + ylim(c(0, 150)) +
+  coord_fixed(1/5)
+
+# passo 14 - alterando rótulos
+
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Ano", y = NULL) +
+  scale_y_continuous(
+    label = function(x) {return(
+      paste(x, "Graus Fahrenheit"))})
+
+# Passo 15 - "Usando o ggtitle" - configurar titulo
+
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Ano", y = "Temperatura (°F)") +
+  ggtitle("Temperaturas em Chicago")
+
+# passo 16 - plotando com todas informações
+
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Ano", y = "Temperatura (°F)",
+       title = "Temperaturas em Chicago",
+       subtitle = "Padrão sazonal de temperaturas diárias de 1997 a 2001",
+       caption = "Dados: NMMAPS")
+
+# passo 17 
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Ano", y = "Temperatura (°F)",
+       title = "Temperaturas em Chicago") +
+  theme(plot.title = 
+          element_text(face = "bold",
+                                  margin = margin(10, 0, 10, 0), # top, right, bottom, left
+                                  size = 14))
+
