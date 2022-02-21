@@ -3,7 +3,12 @@ title: "Trabalhando com Strings"
 subtitle: "Aula preparada a partir do cap 14 do livro 'R for Data Science"
 author: "Claudiano Cruz Neto"
 date: "`r Sys.Date()`"
-output: html_document
+encoding: "iso-8859-1"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
     code_download: true
 ---
 
@@ -22,6 +27,57 @@ Este capítulo se concentrará no pacote `stringr` para manipulação de strings
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 ```
+
+## Relembrando como importar dados do Excel e .CSV
+
+Geralmente estamos acostumados a trabalhar com arquivos de excel. Estes assumem a forma de .xlx e .xlxs. Outro formato também conhecido é o .CSV.
+
+Podemos importar dados os dados de um arquivo de excel/csv para dentro do R, e assim trabalhar com ele no ambiente do R Studio, por exemplo.
+
+Para isso usamos algumas *funções* ou *atalhos* do MENU.
+
+### Usando FUNÇÕES 
+
+
+Opção para arquivo do tipo *xlx ou xlxs* do proprio computador
+```{r}
+library(readxl)
+teste4 <- read_excel("C:/Users/User/Downloads/Planilha para áreas (1).xlsx", sheet = 12, skip = 3)
+```
+
+```{r}
+teste4
+```
+
+
+Opção para arquivo do tipo *csv*
+```{r}
+library(readr)
+planilhacsv <- read.csv("C:/Users/User/Downloads/planilhacsv.csv", sep=";")
+
+```
+
+```{r}
+planilhacsv
+```
+
+
+Opção para arquivo do tipo *xlx* ou *xlxs*
+```{r}
+library(readxl)
+
+url <- "https://github.com/cccneto/valuation_urbanParks/blob/master/base_unificada.xlsx?raw=true"
+destfile <- "base_dados.xlsx"
+curl::curl_download(url, destfile)
+
+nome_dados <- read_excel(destfile)
+
+```
+
+```{r}
+nome_dados
+```
+
 
 ## O básico de Strings
 
@@ -46,7 +102,16 @@ Isso significa que se você quiser incluir uma barra invertida literal, será ne
 Esteja ciente de que a representação impressa de uma string não é a mesma que a própria string, porque a representação impressa mostra os escapes. Para ver o conteúdo bruto da string, use writeLines():
 
 ```{r}
-x <- c("\"", "\\")
+# x <- c("\")
+# x
+
+
+``` 
+
+`Erro: Incomplete expression: x <- c("\")`
+
+```{r}
+x <- c("\\")
 x
 ```
 
@@ -66,6 +131,100 @@ Muitas strings são freqüentemente armazenadas em um vetor de caracteres, que v
 
 ```{r}
 c("one", "two", "three")
+```
+
+
+## Duplicando Strings
+
+Uma operação comum ao lidar com caracteres é a duplicação. O problema é que R não tem uma função específica para esse fim. Mas stringr faz: `str_dup()` duplica e concatena strings dentro de um vetor de caracteres. Seu uso requer dois argumentos:
+
+`str_dup(string, times)`
+
+A primeira entrada é a string que você deseja duplicar. A segunda entrada, times, é o número de vezes para duplicar cada string:
+
+```{r}
+# uso padrão
+str_dup("hola", 3)
+#> [1] "holaholahola"
+```
+
+```{r}
+# uso com diferentes 'vezes'
+str_dup("adios", 1:3)
+#> [1] "adios"           "adiosadios"      "adiosadiosadios"
+```
+
+```{r}
+# uso com vetor de strings
+words <- c("lorem", "ipsum", "dolor", "sit", "amet")
+str_dup(words, 2)
+#> [1] "loremlorem" "ipsumipsum" "dolordolor" "sitsit"     "ametamet"
+```
+
+## Aparando Strings
+
+Uma das tarefas típicas do processamento de strings é a de analisar um texto em palavras individuais. Normalmente, você acaba com palavras que têm espaços em branco, chamados espaços em branco, em cada extremidade da palavra. Nessa situação, você pode usar a função `str_trim()` para remover qualquer número de espaços em branco nas extremidades de uma string. Seu uso requer apenas dois argumentos:
+
+
+`str_trim(string, lado = "both")`
+
+
+A primeira entrada é a string a ser cortada e a segunda entrada indica o lado em que o espaço em branco será removido.
+
+Considere o seguinte vetor de strings, alguns dos quais têm espaços em branco à esquerda, à direita ou em ambos os lados. Aqui está o que `str_trim()` faria com eles em diferentes configurações de lado
+
+```{r}
+# texto com espaços em branco
+bad_text <- c("Este", "exemplo", "tem vários", "espaços em branco")
+```
+
+```{r}
+# remove os espaços em branco do lado esquerdo
+str_trim(bad_text, side = "left")
+#> [1] "Este" "exemplo " "tem vários " "espaços em branco "
+```
+
+```{r}
+# remove os espaços em branco do lado direito
+str_trim(bad_text, side = "right")
+#> [1] "Este" " exemplo" "tem vários" " espaços em branco"
+```
+
+```{r}
+# remove espaços em branco em ambos os lados
+str_trim(bad_text, side = "both")
+#> [1] "Este" "exemplo" "tem vários" "espaços em branco"
+```
+
+## Extração de Palavras
+
+Terminamos este capítulo descrevendo a função word() que é projetada para extrair palavras de uma sentença:
+
+`word(string, início = 1L, fim = início, set = fixo(" "))`
+
+A maneira como você usa `word()` é passando uma string, junto com uma posição inicial da primeira palavra a ser extraída e uma posição final da última palavra a ser extraída. Por padrão, o separador sep usado entre palavras é um único espaço.
+
+Vejamos alguns exemplos:
+
+```{r}
+# Uma frase qualquer
+change <- c("Be the change", "you want to be")
+
+# extrair a primeira palavra de cada elemento
+word(change, 1)
+#> [1] "Be"  "you"
+
+# extrair a segunda palavra de cada elemento
+word(change, 2)
+#> [1] "the"  "want"
+
+# extrair a ultima palavra de cada elemento
+word(change, -1)
+#> [1] "change" "be"
+
+# extrair todas menos as primeiras palavras
+word(change, 2, -1)
+#> [1] "the change" "want to be"
 ```
 
 
@@ -103,6 +262,14 @@ Note que escrever `str_c("x", "y", sep = ", ")`vai gerar um resultado diferente 
 str_c("x", "y", sep = ",") # mudou o espaçamento
 ```
 
+E ainda podemos trabalhar com a junção de vetores ou colunas:
+```{r}
+planilhacsv %>% 
+  mutate(new_name = str_c(Nome, Curso)) %>%
+  View()
+  
+```
+
 Como a maioria das outras funções em R, os valores ausentes são contagiosos. Se você quiser que eles imprimam como "NA", use `str_replace_na()`:
 
 ```{r}
@@ -133,12 +300,28 @@ Você pode extrair partes de uma string usando `str_sub()`. Assim como a string,
 x <- c("Apple", "Banana", "Pear")
 str_sub(x, 1, 1)
 ```
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 2)
+```
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 3)
+``` 
+
 Números negativos contam do final para o início (de trás para frente):
 
 ```{r}
-# negative numbers count backwards from end
+# números negativos contam para trás a partir do final
 str_sub(x, -3, -1)
 ```
+```{r}
+# números negativos contam para trás a partir do final
+str_sub(x, -1)
+```
+
 
 Observe que `str_sub()` não falhará se a string for muito curta: ela apenas retornará o máximo possível:
 
@@ -154,6 +337,13 @@ str_sub(x, 1, 1) <- str_to_lower(str_sub(x, 1, 1))
 x
 ```
 
+
+
+
+
+
+
+
 ## Locales
 
 Acima eu usei `str_to_lower()` para mudar o texto para minúsculas. Você também pode usar `str_to_upper()` ou `str_to_title()`. No entanto, a mudança de maiúsculas e minúsculas é mais complicado do que pode parecer à primeira vista, porque idiomas diferentes têm regras diferentes para a mudança de maiúsculas e minúsculas. Você pode escolher qual conjunto de regras usar especificando um local:
@@ -161,9 +351,9 @@ Acima eu usei `str_to_lower()` para mudar o texto para minúsculas. Você també
 ```{r}
 # Turco tem dois i's: com e sem ponto, e
 # tem uma regra diferente para colocá-los em letras maiúsculas:
-str_to_upper (c ("i", "ı"))
+str_to_upper(c("i", "ı"))
 
-str_to_upper (c ("i", "ı"), locale = "tr")
+str_to_upper(c("i", "ı"), locale = "tr")
 ```
 
 O local é especificado como um código de idioma ISO 639, que é uma abreviatura de duas ou três letras. Se você ainda não conhece o código do seu idioma, a Wikipedia tem uma boa lista. Se você deixar o local em branco, ele usará o local atual, conforme fornecido pelo seu sistema operacional.

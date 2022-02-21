@@ -80,7 +80,7 @@ Nós iremos
 
 .center[
 ```{r, echo = FALSE, out.width = "75%", fig.cap = "From Stephanie Kirmer's Functions in R presentation", fig.alt = "A schematic showing inputs going into a 'function' that produces output based on those inputs."}
-knitr::include_graphics("figs/week06_files/function_diagram.png")
+knitr::include_graphics("figs/function.png")
 ```
 ]
 
@@ -125,7 +125,7 @@ Algumas regras gerais de estilo:
 .pull-left[
 Estilos de nomes comuns em R
 ```{r, echo = FALSE, fig.cap = "Artwork by @allison_horst", fig.alt = "Artwork by Allison Horst to show the different naming conventions in R, including snake case, camel case, kebab case, etc ."}
-knitr::include_graphics("figs/week06_files/coding_cases.png")
+knitr::include_graphics("figs/coding_cases.png")
 ```
 ]
 
@@ -470,7 +470,6 @@ View(sum)
 
 .center[
 ```{r, echo = FALSE, out.width = "75%", fig.alt = "A screenshot showing the new pane that opens when viewing a function. This uses the union() function as the example."}
-knitr::include_graphics("figs/week06_files/view_function.png")
 ```
 ]
 ]

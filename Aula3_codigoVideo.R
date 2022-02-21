@@ -89,3 +89,5 @@ gapminder %>%
 
 gapminder %>% 
   mutate(lifeExp_1000 = lifeExp*1000)
+
+dput(tb)
