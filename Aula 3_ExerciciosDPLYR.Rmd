@@ -1,0 +1,157 @@
+---
+title: "Exercicios Dplyr"
+runningheader: "" # only for pdf output
+subtitle: "Métodos Computacionais em R" # only for html output
+author: "Prof. Claudiano Neto"
+date: "`r Sys.Date()`"
+encoding: "iso-8859-1"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercicio - Os cinco verbos do `DPLYR`
+
+Vamos começar! Como sempre, a primeira coisa que faremos é carregar o `tidyverse`. 
+
+_Observação: se você ainda não instalou o `tidyverse`, primeiro será necessário executar o código `install.packages(“tidyverse”)`._
+
+```{r}
+library(tidyverse)
+```
+
+Este é o quadro de dados - `dataframe` que analisaremos neste exercício. Para trabalhar com esse dataframe você precisa carregá-lo. 
+```{r echo=TRUE}
+scores <- 
+  tibble(
+    name = c("mike", "carol", "greg", "marcia", "peter", "jan", "bobby", "cindy", "alice"),
+    school = c("south", "south", "south", "south", "north", "north", "north", "south", "south"),
+    teacher = c("johnson", "johnson", "johnson", "johnson",  "smith", "smith", "smith", "perry", "perry"),
+    sex = c("male", "female", "male", "female", "male", "female", "male", "female", "female"),
+    math_score = c(4, 3, 2, 4, 3, 4, 5, 4, 5),
+    reading_score = c(1, 5, 2, 4, 5, 4, 1, 5, 4)
+  )
+
+```
+
+Vamos dar uma olhada no objeto `scores`
+
+```{r}
+scores
+```
+
+Observe que `scores` é um objeto `tibble`contendo 9 linhas e 6 colunas. Nas colunas temos nome, escola, professor, sexo, nota de matemática e nota de leitura (todas descritas com seus equivalentes em inglês).
+
+Agora que conhecemos a base, quero ter certeza de que você entende a diferença entre fazer algo e atribuir um novo nome e simplesmente fazer sem nomeá-lo. Por exemplo, certifique-se de entender o seguinte:
+
+```{r}
+# pegue as 3 primeiras linhas
+scores %>% 
+  slice(1:3)
+```
+
+Agora veja que...
+
+```{r}
+# pegue as 3 primeiras linhas, e atribua isto a um novo nome "scores_small"
+scores_small <- scores %>% 
+  slice(1:3)
+
+# veja o que está dentro de "scores_small"
+scores_small
+```
+
+Neste exercício, normalmente apenas imprimiremos os resultados e não os salvaremos, mas é uma opção, se você quiser!
+
+Agora podemos fazer o exercício. A maioria das seções começará com um exemplo para você examinar. Quando as perguntas exigirem uma resposta por escrito, haverá uma linha de “Resposta” para você preencher.
+
+# Part 1: Arrange
+
+## Exemplo
+
+*Questão Exemplo*: Classifique os dados por math_score de alto a baixo (ou seja, em ordem _decrescente_. Quem teve a melhor pontuação em matemática?
+
+```{r}
+scores %>% 
+  arrange(desc(math_score))
+```
+
+*Resposta*: Bobby e alice empataram com a maior nota em matemática (ambos tiraram 5).
+
+*Questão 1*: Classifique os dados por nome - `name`, do primeiro ao último no alfabeto.
+
+*Questão 2*: Classifique os dados por `sexo` para que as mulheres apareçam primeiro. Qual `sexo` parece ter melhores pontuações de leitura?
+
+*Resposta*:_________
+
+*Questão 3*: Classifique os dados por `escola`, depois `professor`, `sexo`, depois `math_score` e, finalmente, por `reading_score`.
+
+# Part 2: Select
+
+## Exemplo
+
+*Questão Exemplo*: selecione somente as colunas `name`, `math_score` e `reading_score`.
+
+```{r}
+scores %>% 
+  select(name, math_score,reading_score)
+```
+
+*Questão 1*: selecione todas as colunas exceto a coluna `sex`.
+
+*Questão 2*: selecione todas as colunas exceto as colunas `math_score` e `reading_score`.
+
+*Questão 3*: Mantenha todas as colunas, mas reorganize-as para que o sexo seja a primeira coluna.
+
+# Part 3: Filter
+
+## Exemplo
+
+*Questão Exemplo*: filtre os estudantes do sexo masculino e que a escola seja "south".
+
+```{r}
+# Opção 1
+scores %>% 
+  filter(sex == "male" & school == "south")
+```
+
+```{r}
+# Opção 2
+scores %>% 
+  filter(sex == "male", school == "south")
+```
+
+*Questão 1*: Filtrar para alunos que se saíram bem em matemática (você decide o que “bem” significa).
+
+*Questão 2*: Use o filtro para descobrir quantos alunos tiveram uma pontuação de matemática de 4 ou mais e uma pontuação de leitura de 3 ou mais.
+
+*Resposta*: __________
+
+*Questão 3*: Explique os erros em cada um dos blocos de código a seguir e corrija-os para resolver o problema. Para isso você precisa rodar os codigos que estão descritos abaixo.
+
+```{r eval=FALSE, include=TRUE}
+# code block 1
+scores %>% 
+  filter(school == south)
+```
+
+```{r eval=FALSE, include=TRUE}
+# code block 2
+scores %>% 
+  filter(school = "south")
+```
+
+```{r}
+# Vamos lá! nao desista antes de tentar.
+```
+
+*Questão 3*: Você está tentando descobrir quais alunos obtiveram nota 3 ou pior em *matemática* ou *leitura*! Tente usar a função `filter()` nessas condições. 
+
+*Questão 3*: filtre os estudantes que tem um `reading_score` de 2, 3, *ou* 4!
