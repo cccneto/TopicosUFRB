@@ -1,9 +1,8 @@
 ---
-title: "Introdução a Programação com R"
-subtitle: "Tópicos Especiais em Meio Ambiente I"
+title: "Métodos Computacionais em R"
 author: "Claudiano Neto, Dr."
 institute: "Universidade Federal do Recôncavo da Bahia <br> Cruz das Almas, BA, BRA"
-date:  "Junho, 28, 2021"
+date:  "Novembro, 8, 2021"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -633,6 +632,16 @@ unique(casos)
 
 
 ---
+background-image:url("figs/DataStructure.png")
+background-size: 80%
+background-position: 60% 60%
+
+.pull-left[
+## estruturas de dados em `R`
+]
+
+
+---
 ## instalando pacotes
 
 ```{r pacotes, eval = F}
@@ -679,7 +688,7 @@ args(get_corona_br)
 ## download dos dados para Amapá
 
 ```{r coronabr, echo = TRUE}
-library(coronabr)
+#library(coronabr)
 ```
 
 ```{r get_corona_br, eval = FALSE}
