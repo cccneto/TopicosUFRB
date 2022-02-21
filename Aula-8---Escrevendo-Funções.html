@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Funções no R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Claudiano Neto" />
+    <script src="Aula-8---Escrevendo-Funções_files/header-attrs/header-attrs.js"></script>
+    <script src="Aula-8---Escrevendo-Funções_files/fabric/fabric.min.js"></script>
+    <link href="Aula-8---Escrevendo-Funções_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="Aula-8---Escrevendo-Funções_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <script src="Aula-8---Escrevendo-Funções_files/clipboard/clipboard.min.js"></script>
+    <link href="Aula-8---Escrevendo-Funções_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="Aula-8---Escrevendo-Funções_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="Aula-8---Escrevendo-Funções_files/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="Aula-8---Escrevendo-Funções_files/tile-view/tile-view.js"></script>
+    <script src="Aula-8---Escrevendo-Funções_files/js-cookie/js.cookie.js"></script>
+    <script src="Aula-8---Escrevendo-Funções_files/peerjs/peerjs.min.js"></script>
+    <script src="Aula-8---Escrevendo-Funções_files/tiny.toast/toast.min.js"></script>
+    <link href="Aula-8---Escrevendo-Funções_files/xaringanExtra-broadcast/broadcast.css" rel="stylesheet" />
+    <script src="Aula-8---Escrevendo-Funções_files/xaringanExtra-broadcast/broadcast.js"></script>
+    <link href="Aula-8---Escrevendo-Funções_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="Aula-8---Escrevendo-Funções_files/countdown/countdown.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="wrap.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Funções no R
+## Material adaptado das aulas da Dra. Ariel Muldoon
+### Claudiano Neto
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Objetivos de Hoje
+
+Visão geral   
+-     **Compreender e aprender a escrever funções básicas em R**   
+
+Nós iremos
+
+- Aprender a controlar a entrada e a saída de funções em R
+- Ler as funções existentes
+- Usar as condições para retornar diferentes saídas com base nas entradas
+
+--
+
+&lt;br/&gt;
+
+---
+
+## O que é uma função?
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="figs/function.png" alt="A schematic showing inputs going into a 'function' that produces output based on those inputs." width="75%" /&gt;
+&lt;p class="caption"&gt;From Stephanie Kirmer's Functions in R presentation&lt;/p&gt;
+&lt;/div&gt;
+]
+
+???
+
+As funções recebem entradas, realizam alguns conjuntos de tarefas e geram a saída que desejamos. R é baseado em funções e as pessoas já estão usando aquelas que outros criaram em seu trabalho diário com R
+
+---
+
+## Quando escrever sua própria função?
+
+- Quando fizer tarefas repetitivas
+
+
+&lt;blockquote class="twitter-tweet tw-align-center" data-lang="en"&gt;&lt;p lang="en" dir="ltr"&gt;Write same code three times, write a function&lt;/p&gt;&amp;mdash; David Robinson (@cantabile) &lt;a href="https://twitter.com/drob/status/928447584712253440"&gt;Tweet November 8, 2017&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src="//platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+
+&lt;br/&gt;
+- Para fazer uma tarefa específica ou obter um tipo específico de saída  
+
+???
+
+Principalmente sobre como copiar e colar código repetidamente
+Também pode obter exatamente o que deseja se outras funções não o fizerem
+
+---
+
+## Nomeando suas funções
+
+Ao começar a criar funções, você precisará *nomeá-las*.
+
+Algumas regras gerais de estilo:
+- Torne os nomes das funções legíveis e descritivos
+- Tente ser conciso, mas os nomes significativos que indicam o que a função faz são mais importantes
+- Seja consistente em seu estilo de nomenclatura. Por exemplo, não nomeie uma função de plotagem `make_scatterplot()` e outra `barplotFunction()`.
+
+---
+
+## Nomear suas funções
+
+
+.pull-left[
+Estilos de nomes comuns em R
+&lt;div class="figure"&gt;
+&lt;img src="figs/coding_cases.png" alt="Artwork by Allison Horst to show the different naming conventions in R, including snake case, camel case, kebab case, etc ." width="100%" /&gt;
+&lt;p class="caption"&gt;Artwork by @allison_horst&lt;/p&gt;
+&lt;/div&gt;
+]
+
+.pull-right[
+.footnote[
+Leia mais sobre convenções e estilos de nomenclatura de funções em [*R for Data Science*](https://r4ds.had.co.nz/functions.html#functions-are-for-humans-and-computers)
+]
+]
+
+
+???
+
+Estaremos usando `snake_case` hoje, mas você pode decidir usar outra coisa em seu próprio trabalho.
+
+---
+
+
+class: center, middle, inverse, hide-logo
+
+# &lt;font style="font-family: cursive; font-style:italic"&gt;Let's get started!&lt;/font&gt;
+
+---
+
+## Rodando o código
+
+&lt;br/&gt;&lt;br/&gt;
+**Set up**  
+
+Aprenderemos a escrever funções executando primeiro o código de exemplo que já escrevi.
+
+No final de cada seção, você terá a chance de praticar o que acabamos de ver.
+
+---
+
+## Estrutura de uma função
+
+Nós criamos funções com a função `function()`. Isto envolve:
+
+.pull-left[
+1.  Atribuir um nome para a nova função.
+]
+
+
+.pull-right[
+
+```r
+*my_function =
+    function(argument1, etc.) {
+    &lt;Write code here&gt;
+    return(output)
+}
+```
+]
+
+---
+
+## Estrutura de uma função
+
+Nós criamos funções com a função `function()`. Isto envolve:
+
+.pull-left[
+1.  Atribuir um nome para a nova função.
+
+2.  Permitir entradas para a função como * argumentos * dentro de `function()`. As entradas são valores ou objetos que usaremos na função.
+
+]
+
+
+.pull-right[
+
+```r
+*my_function = function(argument1, etc.) {
+    &lt;Write code here&gt;
+    return(output)
+}
+```
+]
+
+---
+
+## Estrutura de uma função
+
+We create functions with `function()`. This involves:
+
+.pull-left[
+1. Atribuindo um nome para a nova função. Use o seu operador de atribuição preferido.
+
+2. Permitir entradas para a função como * argumentos * dentro de `function()`. As entradas são valores ou objetos que usaremos na função.
+
+3. Escrever código para criar a saída da função. Este código fica entre as chaves (`{`) e usa as entradas fornecidas para retornar uma única saída.
+]
+
+
+.pull-right[
+
+```r
+my_function = function(argument1, etc.) {
+*   &lt;Write code here&gt;
+*   return(output)
+}
+```
+]
+
+---
+
+## Estrutura de uma função
+
+.pull-left[
+Depois de executar o código para criar uma função, nós o usamos como outras funções em R, passando entradas para cada argumento.
+]
+
+.pull-right[
+
+```r
+my_function(argument1 = input1, etc.)
+```
+]
+
+---
+
+## Função Básica
+
+Vamos começar com uma função bem básica
+
+.pull-left[
+Esta função, nomead `return_input`, terá um unico argumento, `input`. 
+
+Ela irá simplesmente retornar o que colocarmos como input.
+]
+
+.pull-right[
+
+```r
+return_input = function(input) {
+    return(input)
+}
+```
+]
+
+---
+
+## Função Básica
+
+O objetivo aqui é que você veja como fornecemos entrada para o argumento `input` e a função retorna uma saída com base nessa entrada.
+
+--
+
+.pull-left[
+Por exemplo, pode dar um único valor numérico ao `input`.
+]
+
+.pull-right[
+
+```r
+return_input(input = 1)
+```
+
+```
+## [1] 1
+```
+]
+
+---
+
+### Sua vez
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Passe alguns minutos passando diferentes valores e objetos para o argumento `input` de` return_input() `e olhando para a saída.
+
+Passe o seguinte para o argumento `input`:
+- A letra `"a"`
+- Uma série de letras usando `letters[1:5]`
+- Um vetor de números como `c(1, 5, 9, 10)`
+- O data.frame `mtcars`
+
+<div class="countdown" id="timer_6202b03b" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">02</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Uma função com 2 argumentos
+
+Uma função pode ter quantos argumentos quisermos. Continuamos adicionando-os em `function()` quando definimos a função.
+
+Como ocorre com as funções de nomenclatura, é útil manter os nomes dos argumentos descritivos.
+
+--
+
+.pull-left[
+Nossa próxima função, chamada `sum_two`, tem dois argumentos e produz a soma das duas entradas.
+]
+
+.pull-right[
+
+```r
+sum_two = function(num1, num2) {
+    sum = num1 + num2
+    return(sum)
+}
+```
+]
+
+---
+
+## Uma função com 2 argumentos
+
+.pull-left[
+isso é o que parece se passarmos valores numéricos únicos para os dois argumentos em `sum_two`.
+]
+
+.pull-right[
+
+```r
+sum_two(num1 = 1, 
+        num2 = 2)
+```
+
+```
+## [1] 3
+```
+]
+
+---
+
+### Sua vez 1
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Primeiro, quero que você veja o que acontece com alguns tipos diferentes de entrada para os dois argumentos em `sum_two`.
+
+Passe as seguintes entradas para `num1` e `num2`:
+- Vetores de números, `c(1, 5, 9, 10)` e `c(2, 3, 4, 5)`
+- Letras, `"a"` e `"b"`
+
+<div class="countdown" id="timer_6202adf7" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">02</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+--
+
+&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;
+O que aconteceu quando você colocou as letras?
+
+
+---
+
+### Sua vez 2
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Pratique escrever sua própria função, chamada `norm_by_y`.
+
+A função deve receber dois números como entrada e retornar a diferença entre os números divididos pelo segundo número.
+
+A equação para o que estou descrevendo se parece com: (x - y) / y
+
+
+<div class="countdown" id="timer_6202acb6" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+### Sua vez 2 - solução
+
+
+```r
+norm_by_y = function(num1, num2) {
+    result = (num1 + num2)/num2
+    return(result)
+}
+```
+
+---
+
+## Remover `return()` explícito.
+
+Eu queria começar usando `return()` na função porque acho que torna explícito o que é retornado.
+
+No R, não é padrão usar este estilo de codificação. A simples impressão do objeto de saída *retornará* a saída.
+
+--
+
+.pull-left[
+Aqui temos as mesmas duas funções que tinhamos previamente feito sem usar explicitamente o `return()`.
+
+
+```r
+return_input = function(input) {
+    input
+}
+return_input(input = 1)
+```
+
+```
+## [1] 1
+```
+]
+
+.pull-right[
+&lt;br/&gt;&lt;br/&gt;
+
+```r
+sum_two = function(num1, num2) {
+    sum = num1 + num2
+    sum
+}
+sum_two(num1 = 1, 
+        num2 = 2)
+```
+
+```
+## [1] 3
+```
+]
+
+???
+
+Usar retornos explícitos é útil quando você está começando a pensar sobre entradas e saídas.
+
+---
+
+## Explore funções existentes
+
+Aprender a escrever funções ajuda a entender as funções existentes.
+
+Dar uma olhada no código subjacente pode nos ajudar a descobrir o que uma função está fazendo e, potencialmente, nos ajudar a descobrir de onde podem surgir quaisquer problemas que estamos tendo.
+
+--
+
+.pull-left[
+Você pode ver o código em uma função se você rodar o nome da função sem parenteses no R.
+]
+
+.pull-right[
+
+```r
+sum
+```
+
+```
+## function (..., na.rm = FALSE)  .Primitive("sum")
+```
+]
+
+???
+
+---
+
+## Explore funções existentes
+
+.pull-left[
+No RStudio you pode usar `View()` para abrir a função em uma nova janela em seu painel `Source`. 
+
+Isso pode ser mais fácil de examinar, especialmente para funções longas.
+]
+
+.pull-right[
+
+```r
+View(sum)
+```
+
+.center[
+
+]
+]
+
+&lt;br/&gt;&lt;br/&gt;
+**Note:** Muitas funções R base são escritas em C ++ e, portanto, não retornam código.
+
+???
+
+---
+
+### Sua vez
+
+Escreva o código no fragmento de código fornecido.
+
+Dedique alguns minutos e explore o código na função `union()`.
+
+Primeiro, use os vetores `x` e` y` fornecidos no trecho como entradas para `union()`.
+
+Em seguida, vá até o código da função `union()` uma etapa de cada vez.
+1. Use `as.vector()` em cada objeto.
+2. Concatene os dois objetos com `c()`.
+3. Use `exclusivo()` no vetor da etapa 2.
+
+<div class="countdown" id="timer_6202ad1c" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+### Sua vez - solução
+
+Aqui está um exemplo de como eu tentaria fazer o código `union()`, decompondo cada parte do código.
+
+
+```r
+x = c(1, 2, 3)
+y = c(2, 3, 4)
+
+# Using union()
+union(x = x, y = y)
+
+# Using code within union()
+as.vector(x)
+as.vector(y)
+
+c(as.vector(x), as.vector(y))
+
+unique(c(as.vector(x), as.vector(y)))
+```
+
+---
+
+## Retornando multiplos outputs
+
+Uma função em R pode retornar apenas uma única saída, mesmo se tentarmos retornar mais.
+
+--
+
+.pull-left[
+Para demonstrar isso, aqui está uma tentativa de retornar a soma de dois números, bem como os dois números originais usando a função `return_all()`.
+]
+
+.pull-right[
+
+```r
+return_all = function(num1, num2) {
+    sum = num1 + num2
+    sum
+    num1
+    num2
+}
+```
+]
+
+---
+
+## Retornando multiplos outputs
+
+O que acontece quando usamos esta função?
+
+.pull-left[
+Ele retorna a última coisa que pedimos. Neste caso, a última coisa que pedimos é a entrada para `num1`.
+]
+
+.pull-right[
+
+```r
+return_all(num1 = 1, 
+           num2 = 2)
+```
+
+```
+## [1] 2
+```
+]
+
+---
+
+## Retornando multiplos outputs
+
+
+.pull-left[
+Se quisermos várias saídas, precisaremos combinar as saídas em uma.
+
+Uma lista é uma opção para isso.
+
+O código de exemplo mostra uma lista *nomeada*.
+]
+
+.pull-right[
+
+```r
+return_all2 = function(num1, num2) {
+    sum = num1 + num2
+*   list(sum = sum,
+*        num1 = num1,
+*        num2 = num2)
+}
+
+return_all2(num1 = 1, 
+            num2 = 2)
+```
+
+```
+## $sum
+## [1] 3
+## 
+## $num1
+## [1] 1
+## 
+## $num2
+## [1] 2
+```
+]
+
+---
+
+## Retornando múltiplos outputs
+
+.pull-left[
+Um data.frame como output é útil de várias formas.
+]
+
+.pull-right[
+
+```r
+return_all3 = function(num1, num2) {
+    sum = num1 + num2
+*   data.frame(sum = sum,
+*              num1 = num1,
+*              num2 = num2)
+}
+
+return_all3(num1 = 1, 
+            num2 = 2)
+```
+
+```
+##   sum num1 num2
+## 1   3    1    2
+```
+]
+
+---
+
+### Sua vez
+
+Escreva o código no fragmento de código vazio fornecido.
+
+Volte para a função que você criou anteriormente, chamada `norm_by_y()`.
+- Adicione 2 ao final do nome da função.
+- Edite a função para que ela retorne *(x - y) / y* e *(x - y)* em uma lista.
+
+<div class="countdown" id="timer_6202adc9" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+### Sua vez Solução
+
+
+```r
+norm_by_y2 = function(num1, num2) {
+    result1 = (num1 - num2)/num2
+    result2 = num1 - num2
+    list(result1, result2)
+}
+```
+
+---
+
+## Argumentos Padrão
+
+Podemos atribuir valores padrão aos argumentos. Se usarmos o padrão, não temos que escrever esse argumento.
+
+--
+
+.pull-left[
+Por exemplo, `na.rm = FALSE` é o padrão/default na função `mean()`. 
+
+Vamos fazer uma função construída em torno de `mean()` onde o padrão é `TRUE`. Dessa forma, os valores `NA` são automaticamente removidos.
+]
+
+.pull-right[
+
+```r
+mean_nona = function(vector, 
+                     remove.na = TRUE) {
+  mean(vector, na.rm = remove.na)
+}
+```
+
+&lt;br/&gt;
+Observe que o padrão `remove.na` é` TRUE`. Esta entrada é passada para o argumento `na.rm` dentro de` mean() `dentro de nossa função.
+]
+
+---
+
+## Argumentos Padrão
+
+.pull-left[
+Veja como isso funciona se o vetor contém `NA`. Não precisamos escrever o argumento `remove.na`.
+]
+
+.pull-right[
+
+```r
+mean_nona(vector = c(1, 2, NA))
+```
+
+```
+## [1] 1.5
+```
+]
+
+---
+
+## Argumentos Padrão
+
+.pull-left[
+Para mudar o default, passe `FALSE` ao argumento `remove.na`.
+]
+
+.pull-right[
+
+```r
+mean_nona(vector = c(1, 2, NA),
+*         remove.na = FALSE)
+```
+
+```
+## [1] NA
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+Este parece ser um bom momento para falar sobre escrever *nomes* dos argumentos em vez de usar *posições* dos argumentos. Ambos são permitidos e podem funcionar bem.
+
+.pull-left[
+Usar posições de argumento tende a levar a um código pouco claro.
+
+Para qual argumento a segunda entrada passa?
+]
+
+.pull-right[
+
+```r
+mean(c(1:10, 50), 0.1)
+```
+
+```
+## [1] 6
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+.pull-left[
+Escrever nomes de argumento neste caso torna o código um pouco mais compreensível.
+]
+
+.pull-right[
+
+```r
+mean(x = c(1:10, 50), 
+     trim = 0.1)
+```
+
+```
+## [1] 6
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+Na maioria das vezes, recomendo escrever nomes de argumento para código claro. No entanto, há casos em que podemos não precisar fazer isso, especialmente para funções geralmente conhecidas.
+
+--
+
+.pull-left[
+Por exemplo, para funções de ajuste de modelo como `lm()`, o primeiro argumento é sempre a fórmula do modelo.
+
+Isso é muito conhecido e é bastante normal deixar o nome do argumento `fórmula` fora.
+]
+
+.pull-right[
+
+```r
+lm(mpg ~ disp, data = mtcars)
+```
+
+```
+## 
+## Call:
+## lm(formula = mpg ~ disp, data = mtcars)
+## 
+## Coefficients:
+## (Intercept)         disp  
+##    29.59985     -0.04122
+```
+]
+
+--
+
+Pacotes como **dplyr** usam o conjunto de dados como o primeiro argumento como padrão, e você raramente verá o nome do primeiro argumento escrito.
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+Às vezes, você verá código de usuários avançados em que eles cortaram atalhos e pararam de escrever nomes de argumentos. Isso pode levar a erros se você não souber o que está fazendo.
+--
+
+.pull-left[
+Por exemplo, se eu quisesse ajustar uma regressão ponderada, deixaria de fora `fórmula`, mas então usaria outros nomes de argumento para definir o conjunto de dados em `dados` e pesos em `pesos`.
+]
+
+.pull-right[
+
+```r
+lm(mpg ~ disp, 
+   data = mtcars, 
+   weights = cyl)
+```
+
+```
+## 
+## Call:
+## lm(formula = mpg ~ disp, data = mtcars, weights = cyl)
+## 
+## Coefficients:
+## (Intercept)         disp  
+##    28.63238     -0.03809
+```
+]
+
+---
+
+## Nomes dos Argumentos _vs_ Posições
+
+.pull-left[
+O que acontecerá se eu deixar esses nomes de argumento desativados?
+
+
+```r
+lm(mpg ~ disp, mtcars, cyl)
+```
+
+```
+## 
+## Call:
+## lm(formula = mpg ~ disp, data = mtcars, subset = cyl)
+## 
+## Coefficients:
+## (Intercept)         disp  
+##    29.11391     -0.03525
+```
+]
+
+--
+
+.pull-right[
+&lt;br/&gt;&lt;br/&gt;
+O terceiro argumento para `lm()` é `subconjunto`, não `pesos`.
+
+Felizmente, o `call` na saída mostra o erro, mas pode ser fácil de passar despercebido.
+
+Já vi pessoas cometerem esse tipo de erro e não perceberem em uma análise real.
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+Incluir `...` dentro de `function()` é uma maneira de passar argumentos adicionais que podem ser usados dentro da função. Isso é mais comum para passar argumentos para funções existentes dentro daquela que você está criando.
+
+--
+
+.pull-left[
+Por exemplo, digamos que estivéssemos usando novamente `mean()` dentro de nossa função para calcular uma média.
+]
+
+.pull-right[
+
+```r
+new_mean = function(vector) {
+  mean(vector)
+}
+```
+
+Se usarmos um vetor que contém `NA`, ele retorna `NA` por padrão.
+
+
+```r
+new_mean(vector = c(1, 2, NA))
+```
+
+```
+## [1] NA
+```
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+Queremos ser capazes de passar `na.rm = TRUE` para a função. Uma vez que já é um argumento disponível em `mean()`, podemos usar `...` para isso.
+
+.pull-left[
+Nós literalmente adicionamos `...` nos argumentos da função e então usamos novamente onde queremos usar os argumentos adicionais.
+]
+
+.pull-right[
+
+```r
+use_mean2 = function(vector, ...) {
+  mean(vector, ...)
+}
+```
+
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+Agora podemos fornecer argumentos de `mean()` enquanto usamos nossa função.
+
+.pull-left[
+Qualquer coisa que colocarmos após o argumento `vector` é passado para `mean()`.
+]
+
+.pull-right[
+
+```r
+use_mean2(vector = c(1, 2, NA),
+*        na.rm = TRUE)
+```
+
+```
+## [1] 1.5
+```
+]
+
+---
+
+## Ponto-ponto-ponto para passar argumentos adicionais
+
+**Nota importante:** Ao usar `...`, qualquer argumento incorreto não gerará um erro e, portanto, você pode não perceber os erros de digitação que fez.
+
+.pull-left[
+Veja o que acontece quando eu escrevo incorretamente `na.rm` como` na.rn`.
+]
+
+.pull-right[
+
+```r
+use_mean2(vector = c(1, 2, NA),
+*        na.rn = TRUE)
+```
+
+```
+## [1] NA
+```
+]
+
+---
+
+## Retornos Condicionais
+
+Quando fizemos `sum_two()`, pedi que você olhasse o erro que recebia quando passava caracteres quando a função usava números.
+
+
+```r
+sum_two(num1 = "a", 
+        num2 = "b")
+```
+
+```
+## Error in num1 + num2: argumento não-numérico para operador binário
+```
+
+--
+
+
+Essa mensagem de erro não é particularmente clara.
+
+Adicionar *condições* nesta função para retornar uma mensagem útil se os valores não forem numéricos é um exemplo do que eu vi chamado Retornos condicionais ou *execução condicional*.
+
+---
+
+## Retornos Condicionais
+
+Adicionamos * condições * por meio de declarações lógicas, geralmente envolvendo declarações `if()` e `else()`.
+
+Na documentação para `if()` o **Uso** é:
+&gt; if (cond) expr
+  
+--
+
+&lt;br/&gt;&lt;br/&gt;
+Mais comumente em funções usaremos `if()` e `else()` juntos:
+&gt; if(cond) cons.expr else alt.expr  
+  
+A condição if-else pode ser interpretada como:
+&gt; Teste alguma condição. Se a condição for atendida, retorne uma coisa. Se não for atendido, retorne outra coisa.  
+
+---
+
+## Retornos Condicionais
+
+Aqui está um exemplo de esqueleto de uma instrução if-else. Observe a "condition" lógica entre parênteses e os dois conjuntos de chaves (`{`).
+
+
+```r
+if(condition) {
+    Do something
+} else {
+    Alternative something
+}
+```
+
+???
+
+Você verá as pessoas pularem de escrever as chaves (`{`) em alguns casos simples, mas recomenda-se ficar com elas para termos um código mais claro. Você pode ler uma opinião sobre o estilo de codificação em [R for Data Science](https://r4ds.had.co.nz/functions.html#code-style).
+
+---
+
+## Retornos Condicionais
+
+OK, estamos prontos para ver um exemplo. Vamos adicionar Retornos Condicionais à nossa função `sum_two()`.
+
+.pull-left[
+Isso usa `is.character` para testar se a entrada para `num1` é um caractere.
+
+Se for, ele retorna a mensagem. Se não for, ele retorna a soma.
+]
+
+.pull-right[
+
+```r
+sum_two_if = function(num1, num2) {
+*   if(is.character(num1)) {
+        "Você deve inserir um número ou vetor de números para num1."
+    } else {
+        num1 + num2
+    }
+}
+```
+]
+
+---
+
+## Retornos Condicionais
+
+.pull-left[
+Agora vamos dar uma olhada na saída quando usamos uma letra para `num1`.
+
+
+
+```r
+sum_two_if(num1 = "a", 
+           num2 = "b")
+```
+
+```
+## [1] "Você deve inserir um número ou vetor de números para num1."
+```
+]
+
+--
+
+.pull-right[
+E aqui está a saída se passarmos um número para cada argumento.
+
+
+```r
+sum_two_if(num1 = 1, 
+           num2 = 2)
+```
+
+```
+## [1] 3
+```
+]
+
+---
+
+## Retornos Condicionais
+
+
+.pull-left[
+Podemos expandir a condição com uma instrução *ou * via `|`.
+
+Nesse caso, faz sentido testar se a entrada para *qualquer um* dos argumentos é um caractere.
+]
+
+.pull-right[
+
+```r
+sum_two_if2 = function(num1, num2) {
+*   if(is.character(num1) |
+*      is.character(num2)) {
+      "Você deve inserir um número ou vetor de números para num1 e num2."
+    } else {
+        num1 + num2
+    }
+}
+
+sum_two_if2(num1 = 1, 
+            num2 = "b")
+```
+
+```
+## [1] "Você deve inserir um número ou vetor de números para num1 e num2."
+```
+]
+
+---
+
+### Sua vez 1
+
+Escreva o código no fragmento de código fornecido.
+
+Começando com a função `use_mean2()`, incluída no trecho:
+1. Adicione uma condição para testar se o argumento `vetor` é numérico usando` is.numeric`
+2. Se for, retorna a média do vetor
+3. Caso contrário, retorne uma mensagem explicando o que está errado
+
+<div class="countdown" id="timer_6202adde" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+### Sua vez 1 Solução
+
+
+```r
+use_mean2 = function(vector, ...) {
+    if(is.numeric(vector)) {
+          mean(vector, ...)
+    } else {
+        "Seu input não é numérico"
+    }
+}
+```
+
+---
+
+### Sua vez 2
+
+Dê uma olhada no código para a função `as.factor()`, que pega um vetor de valores para seu argumento `x`.
+
+Esta função contém várias condições use if-else e if-else. Tente resumir o que cada condição é e geralmente o que é feito em cada etapa.
+
+Eu comecei você para cada uma das três condições de retorno.
+
+1. Primeiro, a função verifica se ...
+2. Ignore a parte `!is.object(x)` da condição. Em segundo lugar, a função verifica ...
+3. Finalmente, se as outras duas condições não forem verdadeiras, a função ...
+
+<div class="countdown" id="timer_6202ada1" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+### Sua vez 2 Solução
+
+1. Primeiro, a função verifica se a entrada já é um fator. Nesse caso, ele retorna a entrada.
+
+2. Ignore a parte `!is.object(x)` da condição. Em segundo lugar, a função verifica se a entrada é um número inteiro. Nesse caso, ele cria os níveis classificando os valores exclusivos, combina os níveis com os valores na entrada e torna o resultado um fator.
+
+3. Finalmente, se as outras duas condições não forem verdadeiras, a função usando a função `factor()` na entrada.
+
+---
+
+## Fazendo mais em uma função
+
+Até agora, escrevemos funções básicas de uma etapa. É claro que você pode realizar muitas e muitas etapas em uma função para obter a saída desejada.
+
+--
+
+.pull-left[
+Vamos fazer uma função um pouco mais longa.
+
+As funções `get_rsq()` recebem um conjunto de dados como entrada. Ele ajusta um modelo a esse conjunto de dados, obtém o resumo do modelo e, em seguida, puxa e arredonda o valor `\(R^2\)` e retorna o `\(R^2\)` arredondado.
+]
+
+.pull-right[
+
+```r
+get_rsq &lt;- function(data) {
+    mod = lm(mpg ~ disp, data = data)
+    summ = summary(mod)
+    rsq = round(summ$r.squared, 
+                digits = 2)
+    rsq
+}
+```
+
+&lt;br/&gt;
+Observe que as variáveis `formula` em` lm() `são fixas, o que é uma configuração comum se você for analisar muitos conjuntos de dados com as mesmas variáveis neles.
+
+]
+
+---
+
+## Fazendo mais em uma função
+
+.pull-left[
+A função `get_rsq()` é configurada para uso com as variáveis no conjunto de dados `mtcars`.
+
+
+```r
+get_rsq(data = mtcars)
+```
+
+```
+## [1] 0.72
+```
+]
+
+--
+
+.pull-right[
+Isso significa que podemos passar um subconjunto dos dados como entrada para esta função.
+
+
+```r
+get_rsq(data = subset(mtcars, cyl == 4) )
+```
+
+```
+## [1] 0.65
+```
+]
+
+&lt;br/&gt;&lt;br/&gt;
+Você usaria esse tipo de configuração para se preparar para *iterar* em muitos conjuntos de dados semelhantes, o que é um uso importante das funções.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

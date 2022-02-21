@@ -1,10 +1,10 @@
 ---
 title: "Introdução ao Tidyverse"
 runningheader: "" # only for pdf output
-subtitle: "Tópicos Especiais em Meio Ambiente I" # only for html output
+subtitle: "Métodos Computacionais em R" # only for html output
 author: "Prof. Claudiano Neto"
 date: "`r Sys.Date()`"
-encoding: "UTF8"
+encoding: "iso-8859-1"
 output: html_document
   # tufte::tufte_html: default
   # tufte::tufte_handout:
@@ -18,12 +18,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Carregando pacotes necessários
 ```{r, message=FALSE, warning=FALSE}
 library(gapminder) 
 library(dplyr)
 library(tidyverse)
 ```
 
+# Instalando e carregando pacote `gapminder`
 ```{r message=TRUE, warning=FALSE}
 install.packages("gapminder")
 library(gapminder) 
@@ -44,6 +46,29 @@ gapminder # puxando a base de dados
 knitr::include_graphics("https://miro.medium.com/max/3680/1*NXRsFH_12sfj79W-P4qI0Q.png")
 ```
 
+
+
+# Aprendendo usar o Operador Pipe - *%>%*
+
+O operador pipe tem a função de permitir o encadeamento de uma função após a outra sem precisar criar variáveis intermediárias ou utilizar parênteses intermináveis. A utilidade principal do pipe é melhorar a leitura do código.
+
+```{r, out.width=850, echo = FALSE, purl = FALSE}
+knitr::include_graphics("figs/multi-step-dplyr-chain_example.png")
+```
+
+
+Visto de outra forma, seria algo dessa forma.
+
+```{r, out.width=850, echo = FALSE, purl = FALSE}
+knitr::include_graphics("figs/pipes.png")
+```
+
+E agora mostrando com um exemplo.
+
+```{r, out.width=850, echo = FALSE, purl = FALSE}
+knitr::include_graphics("figs/oppipes.png")
+```
+
 # *Vamos entender de ordenação dos dados*
 
 ```{r}
@@ -59,7 +84,6 @@ vazio = c("NA", 1 , 1, "NA"))
 ```{r}
 dput(tb) # vamos usar para recriar (de uma forma diferente) o objeto que estamos trabalhando 
 ```
-
 
 ## Ordenação crescente
 ```{r}
