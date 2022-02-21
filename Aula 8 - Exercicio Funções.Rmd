@@ -1,0 +1,100 @@
+---
+title: "Criando novas Funções no R"
+author: "Claudiano Neto"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, wrap.css]
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+      beforeInit: "https://platform.twitter.com/widgets.js"
+---
+
+```{r setup, include = FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+library(formatR)
+```
+
+```{r xaringan-themer, include = FALSE, warning = FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#8c1503",
+  secondary_color = "#59594b",
+  inverse_header_color = "#FFFFFF",
+  title_slide_text_color = "#FFFFFF",
+  base_font_size = "22px",
+  link_color = "#F4790B",
+  code_highlight_color = "rgba(244, 121, 11, 0.5)"
+)
+```
+
+
+```{r xaringan-scribble, echo = FALSE}
+xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+xaringanExtra::use_clipboard()
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+```{r broadcast, echo=FALSE}
+xaringanExtra::use_broadcast()
+```
+
+## Exercícios
+
+### Exercicio de exemplo
+
+Crie uma função chamada "foo" que te retorne um vetor de números, começando "1" a "n", e que os numeros sejam separados por um intervalo "d", e que o output "nums",  seja menor ou igual (<=) a "max". 
+
+```{r}
+# Resposta
+
+foo=function(d,n,max){
+  nums=seq(from=1, by=d, length.out=n)
+  return(nums[nums <= max])
+}
+
+foo(d = 2, n=36, max = 30)
+```
+---
+
+### Exercício 1
+Crie uma função chamada "fum" com 2 atributos "a" e "b",em que no corpo da função você peça que `a = a[a<b]`. A função deverá retornar o resultado `a`, ou seja, `return(a)`. Depois execute a função com o seguinte comando `fum(a = 3:7, b = (1:5)^2)`. Quais os números aparecerão na tela do console?
+
+### Exercício 2
+Crie uma função que retornará a soma de 2 inteiros.
+
+```{r eval=FALSE, include=FALSE}
+funct <- function(a, b){
+  x = as.integer(a) + as.integer(b)
+  return(x)
+}
+```
+
+
+### Exercício 3
+Crie uma função que retornará TRUE se um determinado inteiro estiver dentro de um vetor.
+
+---
+
+
+### Exercício 4
+Crie uma função que um dado vetor imprima por tela a média, o desvio padrão e a mediana.
