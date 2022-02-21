@@ -1,0 +1,226 @@
+---
+title: "Aula Joins"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    code_download: true
+encode: "UTF-8"
+---
+
+## Setup
+
+```{r setup}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
+```
+
+```{r libraries}
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(palmerpenguins)# for Palmer penguin data
+library(dplyr)
+```
+
+
+```{r data}
+# Lisa's garden data
+# Palmer penguins
+data("penguins")
+
+# US tuition by state data
+us_avg_tuition <- read_csv("https://www.dropbox.com/s/9e0paradcwvuzll/us_avg_tuition.csv?dl=1") %>% 
+   mutate(across(starts_with("20"), parse_number))
+```
+
+## Metas de aprendizagem
+
+Após este tutorial, você deve ser capaz de fazer o seguinte:
+
+* Junte tabelas de dados usando as funções de junção dplyr e entenda as diferenças entre os difealugueles tipos de junções.
+* Use várias funções forcats, incluindo aquelas não abordadas no tutorial, para alterar a ordem ou os valores dos níveis das variáveis categóricas.
+* Use as funções stringr abordadas neste tutorial (além de `separate()`) e saiba onde encontrar informações sobre outras funções *stringr* (DICA: a folha de cheatsheet é um ótimo começo).
+
+
+## Joining datasets
+
+Ao analisar dados, é comum a necessidade de combinar conjuntos de dados relacionados. Os verbos `join` nos darão uma maneira de fazer isso. Para todas as junções, devemos estabelecer uma correspondência ou correspondência entre cada caso na tabela da esquerda e zero ou mais casos na tabela da direita.
+
+Uma correspondência entre um caso na tabela *left* e um caso na tabela *right* é feita com base nos valores em pares de variáveis correspondentes.
+
+* **Você** especifica quais pares usar.
+* Um par é uma variável da tabela da esquerda e uma variável da tabela da direita ou um conjunto de variáveis da tabela da esquerda e da direita.
+* Os casos devem ter valores *exatamente iguais* no par para que uma correspondência seja feita.
+
+Quando juntamos conjuntos de dados, o formato geral é
+
+```{r, eval=FALSE}
+left_dataset %>% 
+  <JOIN>(right_dataset, 
+         by=<HOW TO JOIN>)
+```
+onde `left_dataset` e` right_dataset` são datasets, `<JOIN>` é o tipo específico de junção, e `<HOW TO JOIN>` dá informações detalhadas sobre como fazê-lo.
+
+O argumento `by` informa como juntar os dois conjuntos de dados, especificamente com quais variáveis ele deve corresponder. Se as variáveis estiverem os mesmos nomes, só precisamos escrever o nome dessa variável, entre aspas: `by =" variable_name "`.
+
+Se as duas variáveis a serem correspondidas têm nomes diferentes nos dois conjuntos de dados, podemos escrever `by = c (" nome1 "=" nome2 ")`, onde `nome1` é a variável no conjunto de dados esquerdo a ser correspondido ao` nome2 `variável no conjunto de dados correto.
+
+Também podemos corresponder em várias variáveis usando `by = c (" nome1 "=" nome2 "," nome1a "=" nome2a ")`, onde os nomes à esquerda dos iguais são variáveis do conjunto de dados esquerdo e aqueles no à direita dos iguais são do conjunto de dados certo.
+
+Se `by =` for omitido de uma junção, então `R` realizará uma * junção natural *, que combina os dois conjuntos de dados por todas as variáveis que eles têm em comum. É uma boa prática sempre incluir `by =`.
+
+Vamos discutir os diferentes tipos de junções.
+
+### Mutating joins
+
+A primeira classe de junções são junções mutantes, que adicionam novas variáveis (colunas) à tabela de dados esquerda a partir de observações correspondentes na tabela direita.
+
+A principal diferença nas três opções de junção mutante nesta classe é como elas respondem às seguintes perguntas:
+
+1. O que acontece quando um caso na tabela da direita não tem correspondências na tabela da esquerda?
+2. O que acontece quando um caso na tabela da esquerda não tem correspondências na tabela da direita?
+
+Três funções de junção mutantes:
+
+**`left_join()` **: a saída tem todos os casos da esquerda, independentemente se houver uma correspondência na direita, mas descarta quaisquer casos na direita que não tenham uma correspondência na esquerda. (Há também uma função ** `right_join ()` ** que faz o oposto.)
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/left-join.gif){width=300}
+
+
+**`inner_join()`**: a saída tem apenas os casos da esquerda com uma correspondência à direita.
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/inner-join.gif){width=300}
+
+
+**`full_join()`**:a saída tem todos os casos da esquerda e da direita. Isso é menos comum do que os dois primeiros operadores de associação.
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/full-join.gif){width=300}
+
+Quando há várias correspondências na tabela da direita para um caso específico na tabela da esquerda, todos os três desses operadores de junção mutante produzem um caso separado na nova tabela para cada uma das correspondências da direita.
+
+
+
+#### Exemplos
+
+Primeiro, crie dois pequenos conjuntos de dados:
+
+```{r}
+general_info <- tibble(
+  person_id = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+  age = c(34, 54, 67, 92, 21, 32, 18, 45, 34, 55),
+  situacao = c("aluguel", "aluguel", "proprio", "aluguel", "aluguel", "proprio", "aluguel", "proprio", "proprio", "proprio")
+)
+
+general_info
+
+pet_info <- tibble(
+  person_id = c(2,3,5,7,8,10,11,12,13,14,15),
+  pet_owner = c("sim", "não", "não", "sim", "sim", "não", "não", "não", "sim", "não", "não")
+)
+
+pet_info
+```
+
+1. Comece com `general_info` e `left_join()` o `pet_info` by `person_id`:
+
+```{r}
+general_info %>% 
+  left_join(pet_info, 
+            by = "person_id")
+```
+
+A tabela resultante tem 10 linhas de dados - as 10 observações de `general_info`. Existem valores ausentes para `pet_owner` para` person_id` que estavam na tabela `general_info` e não na tabela` pet_info`.
+
+** ??? ** Como os resultados mudariam se `right_join ()` fosse usado no código acima em vez de `left_join ()`?
+
+2. Comece com `general_info` e` inner_join () `o` pet_info` por `person_id`:
+
+```{r}
+general_info %>% 
+  inner_join(pet_info, 
+             by = "person_id")
+```
+
+A tabela resultante tem apenas 6 linhas com as observações que estão em `general_info` e` pet_info`.
+
+3. Comece com `general_info` e` full_join () `o` pet_info` por `person_id`:
+
+```{r}
+general_info %>% 
+  full_join(pet_info, 
+            by = "person_id")
+```
+
+A tabela resultante possui 15 linhas. Estão faltando valores para `pet_owner` para` person_id` que estavam na tabela `general_info` e não na tabela` pet_info`, e estão faltando valores para `idade` e` aluguel` para `person_id` que estavam na tabela `pet_info` e não na tabela` general_info`.
+
+### Filtering joins
+
+A segunda classe de junções são junções de filtragem, que selecionam casos específicos da tabela da esquerda com base em se eles correspondem a uma observação na tabela da direita.
+
+** `semi_join ()` **: descarta quaisquer casos na tabela da esquerda que não tenham uma correspondência na tabela da direita. Se houver várias correspondências de casos da direita para um caso da esquerda, ele mantém apenas uma cópia do caso da esquerda.
+
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/semi-join.gif){width=300}
+
+**`anti_join()`**: descarta quaisquer casos na tabela da esquerda que tenham uma correspondência na tabela da direita.
+
+
+![Credit: Garrick Aden-Buie – @grrrck](https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/anti-join.gif){width=300}
+
+#### Examplo
+
+Eles usam os dados de exemplo da seção anterior
+
+Um `semi_join ()` é usado para encontrar a idade e o status do aluguel (informações na tabela `general_info`) para os proprietários de animais de estimação:
+
+```{r}
+general_info %>% 
+  semi_join(pet_info %>% filter(pet_owner == "sim"), 
+            by = "person_id") 
+```
+
+Isso retorna uma tabela com 3 linhas. Uma vez que são mesas pequenas, você deve verificar isso manualmente. Observe também que não pressionei enter após `%>%` dentro de `semi_join ()`. Este é um caso em que o deixamos na mesma linha para torná-lo mais legível.
+
+Use um `anti_join ()` para encontrar a idade e o status do aluguel (informações na tabela `general_info`) para pessoas que não são donos confirmados de animais de estimação (observe que isso inclui desconhecidos):
+
+```{r}
+general_info %>% 
+  anti_join(pet_info %>% filter(pet_owner == "sim"),
+            by = "person_id")
+```
+
+### Demo video
+
+Agora assista ao vídeo abaixo que irá guiá-lo por alguns exemplos de codificação mais avançados (além de uma participação especial de minha filha, Hadley). Os arquivos R Markdown para download para acompanhar são encontrados abaixo do vídeo pivotante.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MJDHRtwZhoM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Recursos
+
+* [Animated GIFs](https://github.com/gadenbuie/tidyexplain)  
+* [R4DS Chapter 13](https://r4ds.had.co.nz/relational-data.html)  
+* [Join Cheatsheet](https://stat545.com/join-cheatsheet.html) by Jenny Bryan
+
+
+### Sua vez!
+
+#### Exercise 1: mutating join
+
+#### Exercício 1: mutação de junção
+
+Resuma os dados `garden_harvest` para encontrar a colheita total em libras para cada variedade de vegetais e, em seguida, tente adicionar a parcela da tabela` garden_planting`. Isso não sairá perfeitamente. Qual é o problema? Como você pode consertar isso?
+
+#### Exercício 2: mutação de junção
+
+Gostaria de saber quanto dinheiro "economizei" com a jardinagem, para cada tipo de vegetal. Descreva como eu poderia usar os conjuntos de dados `garden_harvest` e` garden_spending`, junto com dados de algum lugar como [este] (https://products.wholefoodsmarket.com/search?sort=relevance&store=10542) para responder a esta pergunta. Você pode responder isso em palavras, referenciando várias funções de junção. Você não precisa do código R, mas pode fornecer algum se for útil.
+
+#### Exercício 3: junção de filtragem
+
+Exclua as variedades de vegetais de `colheita_do_jardim` que estão nas parcelas M e H.
+
+```{r}
+
+```

@@ -1,0 +1,78 @@
+---
+title: "Métodos Computacionais em R"
+subtitle: "Exercício Final da Disciplina" # only for html output
+author: "Prof. Claudiano Neto"
+date: '`r format(Sys.Date(), "%d de %B, %Y")`'
+output:
+  tufte::tufte_html: default
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+bibliography: skeleton.bib
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+# invalidate cache when the tufte version changes
+knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+# Qual o objetivo desta atividade?
+
+A idéia é incentivar você a realizar uma análise de dados utilizando o _Software R_. Você poderá usar quaisquer dados que quiser, com exceção apenas aos dados que trabalhamos em sala de aula. Esses não podem ser reutilizados. E o legal dessa atividade é que ela poderá ser realizada em *duplas*. Ou seja, você pode se juntar com outro(a) colega e trabalhar na base de dados.
+
+# O que pode ser feito com os dados?
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+glimpse(mtcars)
+```
+
+
+```{r}
+# Apresentar tabelas 
+DT::datatable(mtcars)
+```
+
+Eu sugiro que você siga alguns passos antes de fazer alguma coisa com os dados. Procure responder perguntas como, mas não somente estas:
+
+- Qual a origem dos seus dados? como eles foram obtidos?
+- Quantas colunas e observações há no seu dataset?
+- Quais os tipos de classes das variáveis?
+- Há dados faltantes? quantos são e onde estão?
+- É necessário fazer algum tipo de faxina nos seus dados? Qual? você conseguiu fazê-las?
+- Procure realizar uma estatistica descritiva. Se você ainda não está familiarizado com isso, procure tutoriais na internet, ou até mesmo olhe nossas aulas, pois lá falamos um pouco sobre isso.
+- Seu trabalho terá que ser organizado. Adote a ideia de usar seções (Pacotes utilizados, Introdução, Origem dos Dados, Analise, Resultados) para que sua análise fique bem apresentada.
+
+# Há recomendações Importantes?
+
+SIM!!!
+
+- O relatório deverá ser apresentado na próxima aula. 
+- Se você tem dificuldades com internet, então sugiro que grave um video apresentando seu relatório e o coloque no Youtube ou outro site que permita assistí-lo. 
+- É importante que você deixe o código visivel, para que possamos entender os passos e funções adotados.
+
+# Sugestão Interessante
+
+Um ótimo recurso que pode ajudar você, é acessar o site [Rpubs](https://rpubs.com/) e conhecer alguns trabalhos/análises feitos por outras pessoas. Desse site você poderá extrair idéias, e algumas linhas de código que podem te ajudar.
+
+# Sugestão de onde tirar dados  
+
+Link para acessar base de dados com Produtos Florestais: 
+https://dados.gov.br/dataset?q=produtos+florestais
+
+# Data de apresentação
+
+Os relatórios deverão ser apresentados no próximo dia *07 de Março*. Ou seja, vocês terão 16 dias para trabalharem nesse trabalho final. Relembro que cumprir essa tarefa é requisíto indispensável para ser aprovado neste componente. 
+
+*Boa sorte*

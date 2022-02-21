@@ -1,9 +1,8 @@
 ---
-title: "Introdução a Programação com R"
-subtitle: "Tópicos Especiais em Meio Ambiente II"
+title: "Métodos Computacionais com R"
 author: "Claudiano Neto, Dr."
 institute: "Universidade Federal do Recôncavo da Bahia <br> Cruz das Almas, BA, BRA"
-date:  "Junho, 28, 2021"
+date:  "Novembro, 08, 2021"
 output:
   xaringan::moon_reader:
     lib_dir: libs
